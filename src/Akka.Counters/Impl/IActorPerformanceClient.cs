@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Akka.Counters
+﻿namespace Akka.Monitoring.Impl
 {
     /// <summary>
     /// Interface used to describe all of the reporting tools for plugging metrics to monitoring services

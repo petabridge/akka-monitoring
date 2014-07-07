@@ -1,7 +1,7 @@
 ﻿using Akka.Actor;
 using Akka.Event;
 
-namespace Akka.Counters
+namespace Akka.Monitoring
 {
     /// <summary>
     /// <see cref="ActorSystem"/> extension that enables the developer to utilize helpful default performance counters for actor systems

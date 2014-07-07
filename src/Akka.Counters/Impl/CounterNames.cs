@@ -1,6 +1,6 @@
 ﻿using Akka.Actor;
 
-namespace Akka.Counters.CounterImpl
+namespace Akka.Monitoring.Impl
 {
     /// <summary>
     /// A static list of names and naming schemes for built-in counters
