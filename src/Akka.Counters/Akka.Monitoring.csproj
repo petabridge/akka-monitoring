@@ -51,9 +51,11 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ActorPerformanceCounters.cs" />
+    <Compile Include="ActorMonitor.cs" />
+    <Compile Include="Impl\AbstractActorMonitoringClient.cs" />
     <Compile Include="Impl\CounterNames.cs" />
-    <Compile Include="Impl\IActorPerformanceClient.cs" />
+    <Compile Include="Impl\IActorMonitoringClient.cs" />
+    <Compile Include="MonitorRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

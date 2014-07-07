@@ -11,7 +11,7 @@ namespace Akka.Monitoring.Impl
         #region Actor lifecycle counters
 
         public const string ActorLifeCycleCategory = "Akka.NET Actor Lifecycle";
-        public const string TotalActorRestarts = "Actor Restarts";
+        public const string TotalActorRestarts = "Total Actor Restarts";
         public const string ActorRestartsPerSecond = "Actor Restarts / sec";
         public const string TotalActors = "Total Actors";
         public const string ActorsCreatedPerSecond = "Actors Created / sec";
@@ -51,13 +51,13 @@ namespace Akka.Monitoring.Impl
         /// <summary>
         /// Gets the name of a counter collect for a specific group of actors
         /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public static string ActorSpecificCategory(IActorContext context)
+        /// <param name="context">The context of the actor reporting the problem</param>
+        /// <param name="metricName">The metric being reported</param>
+        /// <returns>A fully qualified metric name</returns>
+        public static string ActorSpecificCategory(IActorContext context, string metricName)
         {
             return
-                string.Format(string.Format("Akka.NET ({0} / {1}) Actor Metrics", context.System.Name,
-                    context.Props.GetType()));
+                string.Format("{0} [Actor ({1} / {2})]", metricName, context.System.Name, context.Props.GetType());
         }
 
     }

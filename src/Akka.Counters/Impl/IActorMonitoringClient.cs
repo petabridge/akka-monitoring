@@ -1,11 +1,13 @@
-﻿namespace Akka.Monitoring.Impl
+﻿using System;
+
+namespace Akka.Monitoring.Impl
 {
     /// <summary>
     /// Interface used to describe all of the reporting tools for plugging metrics to monitoring services
     /// 
     /// Akka-Monitoring can technically report to multiple reporting services at once, if necessary.
     /// </summary>
-    public interface IActorPerformanceClient
+    public interface IActorMonitoringClient : IDisposable
     {
         /// <summary>
         /// Updates a counter by an arbitrary amount
@@ -34,5 +36,20 @@
         /// <param name="metricName">The name of the metric</param>
         /// <param name="value">The amount to pass to the gauge</param>
         void UpdateGauge(string metricName, int value);
+
+        /// <summary>
+        /// A unique ID for this client instance, used to distinguish unique monitoring instances from eachother
+        /// </summary>
+        int MonitoringClientId { get; }
+        
+        /// <summary>
+        /// Indicates whether or not this client was disposed
+        /// </summary>
+        bool WasDisposed { get; }
+
+        /// <summary>
+        /// A disposal helper
+        /// </summary>
+        void Dispose(bool isDisposing);
     }
 }
