@@ -24,9 +24,7 @@ let configuration = "Release"
 
 // Read release notes and version
 
-let release =
-    File.ReadLines "RELEASE_NOTES.md"
-    |> ReleaseNotesHelper.parseReleaseNotes
+let release = ReleaseNotesHelper.LoadReleaseNotes "RELEASE_NOTES.md"
 
     //--------------------------------------------------------------------------------
 // Directories
