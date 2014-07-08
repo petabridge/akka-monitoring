@@ -55,7 +55,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Akka.Counters\Akka.Monitoring.csproj">
+    <ProjectReference Include="..\Akka.Monitoring\Akka.Monitoring.csproj">
       <Project>{34aacfdc-6eef-4a03-b510-b6b50c1646ab}</Project>
       <Name>Akka.Monitoring</Name>
     </ProjectReference>

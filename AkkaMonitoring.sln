@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30324.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Monitoring", "src\Akka.Counters\Akka.Monitoring.csproj", "{34AACFDC-6EEF-4A03-B510-B6B50C1646AB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Monitoring", "src\Akka.Monitoring\Akka.Monitoring.csproj", "{34AACFDC-6EEF-4A03-B510-B6B50C1646AB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{DE243DF9-3ECE-49D8-88CA-B43509112C78}"
 	ProjectSection(SolutionItems) = preProject
