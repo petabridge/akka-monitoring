@@ -75,7 +75,7 @@ Target "AssemblyInfo" <| fun _ ->
         Attribute.Copyright copyright
         Attribute.Trademark ""
         Attribute.Version version
-        Attribute.FileVersion version ] { GenerateClass = false; UseNamespace = "System" }
+        Attribute.FileVersion version ] <| AssemblyInfoFileConfig(false)
 
 //--------------------------------------------------------------------------------
 // Build the solution
