@@ -1,18 +1,14 @@
 #I @"packages\fake\tools\"
 #r "FakeLib.dll"
-#r "System.Xml.Linq"
 
 open System
 open System.IO
 open Fake
 open Fake.FileUtils
 
-cd __SOURCE_DIRECTORY__
-
 //--------------------------------------------------------------------------------
 // Information about the project for Nuget and Assembly info files
 //--------------------------------------------------------------------------------
-
 
 let product = "Akka.NET Monitoring"
 let authors = [ "Aaron Stannard" ]
@@ -24,9 +20,7 @@ let configuration = "Release"
 
 // Read release notes and version
 
-let release =
-    File.ReadLines "RELEASE_NOTES.md"
-    |> ReleaseNotesHelper.parseReleaseNotes
+let release = ReleaseNotesHelper.LoadReleaseNotes "RELEASE_NOTES.md"
 
     //--------------------------------------------------------------------------------
 // Directories
@@ -35,64 +29,44 @@ let binDir = "bin"
 let testOutput = "TestResults"
 
 let nugetDir = binDir @@ "nuget"
-let workingDir = binDir @@ "build"
-let libDir = workingDir @@ @"lib\net45\"
 
 //--------------------------------------------------------------------------------
 // Clean build results
 
-Target "Clean" <| fun _ ->
-    DeleteDir binDir
+Target "Clean" (fun _ ->
+    CleanDir binDir
+)
 
 //--------------------------------------------------------------------------------
 // Generate AssemblyInfo files with the version for release notes 
 
 
 open AssemblyInfoFile
-Target "AssemblyInfo" <| fun _ ->
-    for file in !! "src/**/AssemblyInfo.fs" do
-        let title =
-            file
-            |> Path.GetDirectoryName
-            |> Path.GetDirectoryName
-            |> Path.GetFileName
-        
-        let version = release.AssemblyVersion + ".0"
 
-        CreateFSharpAssemblyInfo file [ 
-            Attribute.Title title
-            Attribute.Product product
-            Attribute.Description description
-            Attribute.Copyright copyright
-            Attribute.Company company
-            Attribute.ComVisible false
-            Attribute.CLSCompliant true
-            Attribute.Version version
-            Attribute.FileVersion version ]
+Target "AssemblyInfo" (fun _ ->
+    let version = release.AssemblyVersion + ".0"
 
-        CreateCSharpAssemblyInfoWithConfig "src/SharedAssemblyInfo.cs" [
-            Attribute.Company "Akka"
-            Attribute.Copyright copyright
-            Attribute.Trademark ""
-            Attribute.Version version
-            Attribute.FileVersion version ] { GenerateClass = false; UseNamespace = "System" }
+    CreateCSharpAssemblyInfoWithConfig "src/SharedAssemblyInfo.cs" [
+        Attribute.Company "Akka"
+        Attribute.Copyright copyright
+        Attribute.Version version
+        Attribute.FileVersion version ] <| AssemblyInfoFileConfig(false)
+)
 
 //--------------------------------------------------------------------------------
 // Build the solution
 
-Target "Build" <| fun _ ->
-
+Target "Build" (fun _ ->
     !!"AkkaMonitoring.sln"
     |> MSBuildRelease "" "Rebuild"
     |> ignore
-
+)
 
 //--------------------------------------------------------------------------------
 // Copy the build output to bin directory
 //--------------------------------------------------------------------------------
 
-Target "CopyOutput" <| fun _ ->
-    
+Target "CopyOutput" (fun _ ->    
     let copyOutput project =
         let src = "src" @@ project @@ @"bin\release\"
         let dst = binDir @@ project
@@ -100,6 +74,7 @@ Target "CopyOutput" <| fun _ ->
     [ "Akka.Monitoring"
       "Akka.Monitoring.StatsD"]
     |> List.iter copyOutput
+)
 
 Target "BuildRelease" DoNothing
 
@@ -125,22 +100,24 @@ open Nuget
 //--------------------------------------------------------------------------------
 // Clean nuget directory
 
-Target "CleanNuget" <| fun _ ->
+Target "CleanNuget" (fun _ ->
     CleanDir nugetDir
+)
 
 //--------------------------------------------------------------------------------
 // Pack nuget for all projects
 // Publish to nuget.org if nugetkey is specified
 
-Target "Nuget" <| fun _ ->
-
+Target "Nuget" (fun _ ->
     for nuspec in !! "src/**/*.nuspec" do
-        CleanDir workingDir
-
         let project = Path.GetFileNameWithoutExtension nuspec 
         let projectDir = Path.GetDirectoryName nuspec
         let releaseDir = projectDir @@ @"bin\Release"
         let packages = projectDir @@ "packages.config"
+        
+        let workingDir = binDir @@ "build" @@ project
+        let libDir = workingDir @@ @"lib\net45\"    
+        CleanDir workingDir        
 
         let pack outputDir =
             NuGetHelper.NuGet
@@ -163,7 +140,7 @@ Target "Nuget" <| fun _ ->
                 nuspec
         // pack nuget (with only dll and xml files)
 
-        ensureDirectory libDir
+        CleanDir libDir
         !! (releaseDir @@ project + ".dll")
         ++ (releaseDir @@ project + ".xml")
         |> CopyFiles libDir
@@ -197,8 +174,7 @@ Target "Nuget" <| fun _ ->
         let dest = nugetDir @@ destFile
         
         CopyFile dest pkg
-
-    DeleteDir workingDir
+)
 
 //--------------------------------------------------------------------------------
 //  Target dependencies
