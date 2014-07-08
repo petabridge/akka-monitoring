@@ -73,7 +73,6 @@ Target "AssemblyInfo" <| fun _ ->
     CreateCSharpAssemblyInfoWithConfig "src/SharedAssemblyInfo.cs" [
         Attribute.Company "Akka"
         Attribute.Copyright copyright
-        Attribute.Trademark ""
         Attribute.Version version
         Attribute.FileVersion version ] <| AssemblyInfoFileConfig(false)
 
