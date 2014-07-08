@@ -33,8 +33,6 @@ let binDir = "bin"
 let testOutput = "TestResults"
 
 let nugetDir = binDir @@ "nuget"
-let workingDir = binDir @@ "build"
-let libDir = workingDir @@ @"lib\net45\"
 
 //--------------------------------------------------------------------------------
 // Clean build results
@@ -116,12 +114,14 @@ Target "CleanNuget" (fun _ ->
 
 Target "Nuget" (fun _ ->
     for nuspec in !! "src/**/*.nuspec" do
-        CleanDir workingDir
-
         let project = Path.GetFileNameWithoutExtension nuspec 
         let projectDir = Path.GetDirectoryName nuspec
         let releaseDir = projectDir @@ @"bin\Release"
         let packages = projectDir @@ "packages.config"
+        
+        let workingDir = binDir @@ "build" @@ project
+        let libDir = workingDir @@ @"lib\net45\"    
+        CleanDir workingDir        
 
         let pack outputDir =
             NuGetHelper.NuGet
@@ -144,7 +144,7 @@ Target "Nuget" (fun _ ->
                 nuspec
         // pack nuget (with only dll and xml files)
 
-        ensureDirectory libDir
+        CleanDir libDir
         !! (releaseDir @@ project + ".dll")
         ++ (releaseDir @@ project + ".xml")
         |> CopyFiles libDir
@@ -178,9 +178,6 @@ Target "Nuget" (fun _ ->
         let dest = nugetDir @@ destFile
         
         CopyFile dest pkg
-
-    CleanDir workingDir
-    DeleteDir workingDir
 )
 
 //--------------------------------------------------------------------------------
