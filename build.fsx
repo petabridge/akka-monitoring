@@ -51,25 +51,6 @@ open AssemblyInfoFile
 Target "AssemblyInfo" <| fun _ ->
     let version = release.AssemblyVersion + ".0"
 
-    for file in !! "src/**/AssemblyInfo.fs" do
-        let title =
-            file
-            |> Path.GetDirectoryName
-            |> Path.GetDirectoryName
-            |> Path.GetFileName
-        
-
-        CreateFSharpAssemblyInfo file [ 
-            Attribute.Title title
-            Attribute.Product product
-            Attribute.Description description
-            Attribute.Copyright copyright
-            Attribute.Company company
-            Attribute.ComVisible false
-            Attribute.CLSCompliant true
-            Attribute.Version version
-            Attribute.FileVersion version ]
-
     CreateCSharpAssemblyInfoWithConfig "src/SharedAssemblyInfo.cs" [
         Attribute.Company "Akka"
         Attribute.Copyright copyright
