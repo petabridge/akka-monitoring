@@ -1,4 +1,8 @@
-#### 0.2.0 Jul 07 2014
+#### 0.2.1 Jul 08 2014
+* Fixed the name of the `IncrementMessagesReceived` counter so it now correctly reads as `messages.received`
+
+
+#### 0.2.0 Jul 08 2014
 * Made it so custom metrics now prepend their names with the appropriate actor system / actor name
 * Fixed some bugs with reporting custom gauges
 * Updated FAKE build file

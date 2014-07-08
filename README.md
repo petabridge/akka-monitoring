@@ -16,7 +16,7 @@ Akka.Monitoring collects the following pieces of data about your applications:
 3. **Messaging metrics** - messages received, unhandled messages, and dead letters.
 4. **Custom counters, gauges, and timers** - if you want to know how long it takes an actor to process a message inside its mailbox, Akka.Monitoring can time it.
 
-**Akka.Monitoring automatically breaks out all of these metrics (except custom ones) by actor system totals AND 
+**Akka.Monitoring automatically breaks out all of these metrics  by actor system totals AND 
 metrics for individual actor types.** That way you can identify overly chatty or unresponsive actors without having to dig through extensive logs.
 
 ### Supported monitoring systems

@@ -86,9 +86,9 @@ namespace Akka.Monitoring
         /// <param name="context">The context of the actor making this call</param>
         public void IncrementMessagesReceived(IActorContext context = null)
         {
-            Registry.UpdateCounter(CounterNames.UnhandledMessages);
+            Registry.UpdateCounter(CounterNames.ReceivedMessages);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.UnhandledMessages));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ReceivedMessages));
         }
 
         /// <summary>
