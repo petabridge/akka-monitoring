@@ -49,6 +49,8 @@ Target "Clean" (fun _ ->
 
 open AssemblyInfoFile
 Target "AssemblyInfo" <| fun _ ->
+    let version = release.AssemblyVersion + ".0"
+
     for file in !! "src/**/AssemblyInfo.fs" do
         let title =
             file
@@ -56,7 +58,6 @@ Target "AssemblyInfo" <| fun _ ->
             |> Path.GetDirectoryName
             |> Path.GetFileName
         
-        let version = release.AssemblyVersion + ".0"
 
         CreateFSharpAssemblyInfo file [ 
             Attribute.Title title
@@ -69,12 +70,12 @@ Target "AssemblyInfo" <| fun _ ->
             Attribute.Version version
             Attribute.FileVersion version ]
 
-        CreateCSharpAssemblyInfoWithConfig "src/SharedAssemblyInfo.cs" [
-            Attribute.Company "Akka"
-            Attribute.Copyright copyright
-            Attribute.Trademark ""
-            Attribute.Version version
-            Attribute.FileVersion version ] { GenerateClass = false; UseNamespace = "System" }
+    CreateCSharpAssemblyInfoWithConfig "src/SharedAssemblyInfo.cs" [
+        Attribute.Company "Akka"
+        Attribute.Copyright copyright
+        Attribute.Trademark ""
+        Attribute.Version version
+        Attribute.FileVersion version ] { GenerateClass = false; UseNamespace = "System" }
 
 //--------------------------------------------------------------------------------
 // Build the solution
