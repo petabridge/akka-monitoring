@@ -48,7 +48,8 @@ Target "Clean" (fun _ ->
 
 
 open AssemblyInfoFile
-Target "AssemblyInfo" <| fun _ ->
+
+Target "AssemblyInfo" (fun _ ->
     let version = release.AssemblyVersion + ".0"
 
     CreateCSharpAssemblyInfoWithConfig "src/SharedAssemblyInfo.cs" [
@@ -56,6 +57,7 @@ Target "AssemblyInfo" <| fun _ ->
         Attribute.Copyright copyright
         Attribute.Version version
         Attribute.FileVersion version ] <| AssemblyInfoFileConfig(false)
+)
 
 //--------------------------------------------------------------------------------
 // Build the solution
