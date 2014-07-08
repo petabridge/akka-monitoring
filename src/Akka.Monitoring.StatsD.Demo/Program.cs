@@ -4,17 +4,78 @@ using Akka.Actor;
 
 namespace Akka.Monitoring.StatsD.Demo
 {
+    class HelloActor : TypedActor, IHandle<string>
+    {
+        protected override void PreStart()
+        {
+            Context.IncrementActorCreated();
+            base.PreStart();
+        }
+
+        protected override void PostStop()
+        {
+            Context.IncrementActorStopped();
+            base.PostStop();
+        }
+
+        public void Handle(string message)
+        {
+            Context.IncrementMessagesReceived();
+            Console.WriteLine("Received: {0}", message);
+            if (message == "Goodbye")
+            {
+                Context.Self.Stop();
+                Program.ManualResetEvent.Set(); //allow the program to exit
+            }
+            else
+                Sender.Tell("Hello!");
+        }
+    }
+
+    class GoodbyeActor : TypedActor, IHandle<Tuple<ActorRef,string>>, IHandle<string>
+    {
+        protected override void PreStart()
+        {
+            Context.IncrementActorCreated();
+            base.PreStart();
+        }
+
+        protected override void PostStop()
+        {
+            Context.IncrementActorStopped();
+            base.PostStop();
+        }
+
+        public void Handle(string message)
+        {
+            Context.IncrementMessagesReceived();
+            Console.WriteLine("Received: {0}", message);
+            Sender.Tell("Goodbye");
+            Context.Self.Stop();
+        }
+
+        public void Handle(Tuple<ActorRef, string> message)
+        {
+            Context.IncrementMessagesReceived();
+            message.Item1.Tell("Starting");
+        }
+    }
+
     class Program
     {
+        public static AutoResetEvent ManualResetEvent = new AutoResetEvent(false);
+
         private static ActorSystem _system;
 
         static void Main(string[] args)
         {
-            //var manualResetEvent = new AutoResetEvent(false);
+   
             _system = ActorSystem.Create("akka-performance-demo");
             var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_system, new ActorStatsDMonitor());
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Starting up actor system...");
+            var goodbye = _system.ActorOf<GoodbyeActor>();
+            var hello = _system.ActorOf<HelloActor>();
             if(registeredMonitor)
                 Console.WriteLine("Successfully registered StatsD monitor");
             else
@@ -28,16 +89,17 @@ namespace Akka.Monitoring.StatsD.Demo
                 Thread.Sleep(100);
                 count--;
             }
-            
-            Console.WriteLine("Press any key to shut down");
-            Console.ReadKey();
-            _system.Shutdown();
-            Console.WriteLine("Shutting down...");
-            //while (manualResetEvent.WaitOne())
-            //{
-            //    Console.WriteLine("Shutting down...");
-            //    _system.Shutdown();
-            //}
+            Console.WriteLine("Starting a conversation between actors");
+            goodbye.Tell(new Tuple<ActorRef,string>(hello,"Start"));
+            while (ManualResetEvent.WaitOne())
+            {
+                Console.WriteLine("Shutting down...");
+                _system.Shutdown();
+                Console.WriteLine("Shutdown complete");
+                Console.WriteLine("Press any key to exit");
+                Console.ReadKey();
+                return;
+            }
         }
     }
 }

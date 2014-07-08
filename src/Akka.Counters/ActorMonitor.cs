@@ -51,7 +51,7 @@ namespace Akka.Monitoring
         public void IncrementActorRestart(IActorContext context = null)
         {
             Registry.UpdateCounter(CounterNames.ActorRestarts);
-            if(context != null)
+            if (context != null)
                 Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorRestarts));
         }
 
@@ -152,6 +152,39 @@ namespace Akka.Monitoring
             Registry.UpdateCounter(CounterNames.InfoMessages);
             if (context != null)
                 Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.InfoMessages));
+        }
+
+        /// <summary>
+        /// Increment a custom user-defined counter
+        /// </summary>
+        /// <param name="metricName">The name of the counter as it will appear in your monitoring system</param>
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void IncrementCounter(string metricName, int value = 1, double sampleRate = 1)
+        {
+            Registry.UpdateCounter(metricName, value, sampleRate);
+        }
+
+        /// <summary>
+        /// Increment a custom timing, used to measure the elapsed time of something
+        /// </summary>
+        /// <param name="metricName">The name of the timing as it will appear in your monitoring system</param>
+        /// <param name="time">The amount of time that elapsed, in milliseconds</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void Timing(string metricName, long time, double sampleRate = 1)
+        {
+            Registry.UpdateTimer(metricName, time, sampleRate);
+        }
+
+        /// <summary>
+        /// Increment a custom Gauge, used to measure arbitrary values (such as the size of messages, etc... non-counter measurements)
+        /// </summary>
+        /// <param name="metricName">The name of the timing as it will appear in your monitoring system</param>
+        /// <param name="value">The value of the gauge</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void Gauge(string metricName, int value = 1, double sampleRate = 1)
+        {
+            Registry.UpdateCounter(metricName, value, sampleRate);
         }
     }
 

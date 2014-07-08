@@ -41,7 +41,7 @@ namespace Akka.Monitoring.Impl
         public static string ActorSpecificCategory(IActorContext context, string metricName)
         {
             return
-                string.Format("{0}.{1}.{2}", metricName, context.System.Name, context.Props.TypeName);
+                string.Format("{0}.{1}.{2}", metricName, context.System.Name, context.Props.Type.Name);
         }
 
     }

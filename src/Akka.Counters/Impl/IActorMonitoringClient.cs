@@ -27,7 +27,7 @@ namespace Akka.Monitoring.Impl
         /// Updates a time-based counter with the duration it took to complete an operation
         /// </summary>
         /// <param name="metricName">The name of the metric</param>
-        /// <param name="time">The amount of time elasped in recording this timer</param>
+        /// <param name="time">The amount of time elasped in recording this timer, in MILLISECONDS.</param>
         /// <param name="sampleRate"></param>
         void UpdateTiming(string metricName, long time, double sampleRate);
 
