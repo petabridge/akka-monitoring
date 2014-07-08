@@ -163,9 +163,12 @@ namespace Akka.Monitoring
         /// <param name="metricName">The name of the counter as it will appear in your monitoring system</param>
         /// <param name="value">The value of the counter. 1 by default.</param>
         /// <param name="sampleRate">The sample rate. 100% by default.</param>
-        public void IncrementCounter(string metricName, int value = 1, double sampleRate = 1)
+        /// /// <param name="context">The context of the actor making this call</param>
+        public void IncrementCounter(string metricName, int value = 1, double sampleRate = 1, IActorContext context = null)
         {
             Registry.UpdateCounter(metricName, value, sampleRate);
+            if (context != null)
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, metricName), value, sampleRate);
         }
 
         /// <summary>
@@ -174,9 +177,12 @@ namespace Akka.Monitoring
         /// <param name="metricName">The name of the timing as it will appear in your monitoring system</param>
         /// <param name="time">The amount of time that elapsed, in milliseconds</param>
         /// <param name="sampleRate">The sample rate. 100% by default.</param>
-        public void Timing(string metricName, long time, double sampleRate = 1)
+        /// <param name="context">The context of the actor making this call</param>
+        public void Timing(string metricName, long time, double sampleRate = 1, IActorContext context = null)
         {
             Registry.UpdateTimer(metricName, time, sampleRate);
+            if (context != null)
+                Registry.UpdateTimer(CounterNames.ActorSpecificCategory(context, metricName), time, sampleRate);
         }
 
         /// <summary>
@@ -185,9 +191,12 @@ namespace Akka.Monitoring
         /// <param name="metricName">The name of the timing as it will appear in your monitoring system</param>
         /// <param name="value">The value of the gauge</param>
         /// <param name="sampleRate">The sample rate. 100% by default.</param>
-        public void Gauge(string metricName, int value = 1, double sampleRate = 1)
+        /// <param name="context">The context of the actor making this call</param>
+        public void Gauge(string metricName, int value = 1, double sampleRate = 1, IActorContext context = null)
         {
-            Registry.UpdateCounter(metricName, value, sampleRate);
+            Registry.UpdateGauge(metricName, value, sampleRate);
+            if (context != null)
+                Registry.UpdateGauge(CounterNames.ActorSpecificCategory(context, metricName), value, sampleRate);
         }
     }
 

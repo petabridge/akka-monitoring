@@ -115,7 +115,7 @@ namespace Akka.Monitoring
         /// <param name="sampleRate">The sample rate. 100% by default.</param>
         public static void IncrementCounter(this IActorContext context, string metricName, int value = 1, double sampleRate = 1)
         {
-            GetMonitor(context).IncrementCounter(metricName, value, sampleRate);
+            GetMonitor(context).IncrementCounter(metricName, value, sampleRate, context);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Akka.Monitoring
         /// <param name="sampleRate">The sample rate. 100% by default.</param>
         public static void Timing(this IActorContext context, string metricName, long time, double sampleRate = 1)
         {
-            GetMonitor(context).Timing(metricName, time, sampleRate);
+            GetMonitor(context).Timing(metricName, time, sampleRate, context);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Akka.Monitoring
         /// <param name="sampleRate">The sample rate. 100% by default.</param>
         public static void Gauge(this IActorContext context,string metricName, int value = 1, double sampleRate = 1)
         {
-            GetMonitor(context).Gauge(metricName, value, sampleRate);
+            GetMonitor(context).Gauge(metricName, value, sampleRate, context);
         }
     }
 }

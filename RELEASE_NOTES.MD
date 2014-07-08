@@ -1,3 +1,8 @@
+#### 0.2.0 Jul 07 2014
+* Made it so custom metrics now prepend their names with the appropriate actor system / actor name
+* Fixed some bugs with reporting custom gauges
+* Updated FAKE build file
+
 #### 0.1.1 Jul 07 2014
 * Fixed a bug with FAKE build system.
 * Fixed some bugs with logger initialization.
