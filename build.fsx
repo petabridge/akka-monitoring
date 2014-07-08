@@ -82,7 +82,7 @@ Target "AssemblyInfo" <| fun _ ->
 
 Target "Build" <| fun _ ->
 
-    !!"Akka.sln"
+    !!"AkkaMonitoring.sln"
     |> MSBuildRelease "" "Rebuild"
     |> ignore
 
@@ -97,11 +97,8 @@ Target "CopyOutput" <| fun _ ->
         let src = "src" @@ project @@ @"bin\release\"
         let dst = binDir @@ project
         CopyDir dst src allFiles
-    [ "Akka"
-      "Akka.Remote"
-      "Akka.FSharp"
-      "Akka.slf4net"
-      "Akka.NLog" ]
+    [ "Akka.Monitoring"
+      "Akka.Monitoring.StatsD"]
     |> List.iter copyOutput
 
 Target "BuildRelease" DoNothing
@@ -202,3 +199,21 @@ Target "Nuget" <| fun _ ->
         CopyFile dest pkg
 
     DeleteDir workingDir
+
+//--------------------------------------------------------------------------------
+//  Target dependencies
+//--------------------------------------------------------------------------------
+
+Target "All" DoNothing
+
+// build dependencies
+"Clean" ==> "AssemblyInfo" ==> "Build" ==> "CopyOutput" ==> "BuildRelease"
+
+// nuget dependencies
+"CleanNuget" ==> "BuildRelease" ==> "Nuget"
+
+
+"BuildRelease" ==> "All"
+"Nuget" ==> "All"
+
+RunTargetOrDefault "NuGet"
