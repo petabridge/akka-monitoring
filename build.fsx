@@ -40,7 +40,7 @@ let libDir = workingDir @@ @"lib\net45\"
 // Clean build results
 
 Target "Clean" (fun _ ->
-    DeleteDir binDir
+    CleanDir binDir
 )
 
 //--------------------------------------------------------------------------------
