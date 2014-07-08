@@ -1,3 +1,6 @@
+#### 0.2.2 Jul 08 2014
+* Fixed the namespacing for StatsD monitoring so system-wide metrics aren't accidentally hidden
+
 #### 0.2.1 Jul 08 2014
 * Fixed the name of the `IncrementMessagesReceived` counter so it now correctly reads as `messages.received`
 
