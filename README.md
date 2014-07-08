@@ -29,7 +29,7 @@ If you don't have any monitoring systems configured to run with Akka.Monitoring,
 
 ## How you use it
 
-First thing you want to do is install the Akka.Monitoring packages via NuGet:
+First thing you want to do is [install the Akka.Monitoring packages via NuGet](https://www.nuget.org/packages/Akka.Monitoring/):
 
     Install-Package Akka.Monitoring
     Install-Package Akka.Monitoring.StatsD
