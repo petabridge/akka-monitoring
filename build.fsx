@@ -7,8 +7,6 @@ open System.IO
 open Fake
 open Fake.FileUtils
 
-cd __SOURCE_DIRECTORY__
-
 //--------------------------------------------------------------------------------
 // Information about the project for Nuget and Assembly info files
 //--------------------------------------------------------------------------------
