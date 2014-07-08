@@ -41,8 +41,9 @@ let libDir = workingDir @@ @"lib\net45\"
 //--------------------------------------------------------------------------------
 // Clean build results
 
-Target "Clean" <| fun _ ->
+Target "Clean" (fun _ ->
     DeleteDir binDir
+)
 
 //--------------------------------------------------------------------------------
 // Generate AssemblyInfo files with the version for release notes 
@@ -80,19 +81,17 @@ Target "AssemblyInfo" <| fun _ ->
 //--------------------------------------------------------------------------------
 // Build the solution
 
-Target "Build" <| fun _ ->
-
+Target "Build" (fun _ ->
     !!"AkkaMonitoring.sln"
     |> MSBuildRelease "" "Rebuild"
     |> ignore
-
+)
 
 //--------------------------------------------------------------------------------
 // Copy the build output to bin directory
 //--------------------------------------------------------------------------------
 
-Target "CopyOutput" <| fun _ ->
-    
+Target "CopyOutput" (fun _ ->    
     let copyOutput project =
         let src = "src" @@ project @@ @"bin\release\"
         let dst = binDir @@ project
@@ -100,6 +99,7 @@ Target "CopyOutput" <| fun _ ->
     [ "Akka.Monitoring"
       "Akka.Monitoring.StatsD"]
     |> List.iter copyOutput
+)
 
 Target "BuildRelease" DoNothing
 
@@ -125,15 +125,15 @@ open Nuget
 //--------------------------------------------------------------------------------
 // Clean nuget directory
 
-Target "CleanNuget" <| fun _ ->
+Target "CleanNuget" (fun _ ->
     CleanDir nugetDir
+)
 
 //--------------------------------------------------------------------------------
 // Pack nuget for all projects
 // Publish to nuget.org if nugetkey is specified
 
-Target "Nuget" <| fun _ ->
-
+Target "Nuget" (fun _ ->
     for nuspec in !! "src/**/*.nuspec" do
         CleanDir workingDir
 
@@ -199,6 +199,7 @@ Target "Nuget" <| fun _ ->
         CopyFile dest pkg
 
     DeleteDir workingDir
+)
 
 //--------------------------------------------------------------------------------
 //  Target dependencies
