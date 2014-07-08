@@ -1,6 +1,5 @@
 #I @"packages\fake\tools\"
 #r "FakeLib.dll"
-#r "System.Xml.Linq"
 
 open System
 open System.IO
@@ -10,7 +9,6 @@ open Fake.FileUtils
 //--------------------------------------------------------------------------------
 // Information about the project for Nuget and Assembly info files
 //--------------------------------------------------------------------------------
-
 
 let product = "Akka.NET Monitoring"
 let authors = [ "Aaron Stannard" ]
