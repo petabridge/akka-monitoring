@@ -179,6 +179,7 @@ Target "Nuget" (fun _ ->
         
         CopyFile dest pkg
 
+    CleanDir workingDir
     DeleteDir workingDir
 )
 
