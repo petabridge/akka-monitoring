@@ -13,7 +13,7 @@ namespace Akka.Monitoring
         /// <summary>
         /// The list of active clients who are available for broadcast
         /// </summary>
-        private readonly ConcurrentSet<IActorMonitoringClient> ActiveClients = new ConcurrentSet<IActorMonitoringClient>();
+        private readonly ConcurrentSet<IActorMonitoringClient> _activeClients = new ConcurrentSet<IActorMonitoringClient>();
 
         /// <summary>
         /// Add a new <see cref="IActorMonitoringClient"/> monitoring implementation to be used
@@ -22,7 +22,7 @@ namespace Akka.Monitoring
         /// <returns>true if the client was successfully added, false otherwise</returns>
         public bool AddMonitor(AbstractActorMonitoringClient client)
         {
-            return ActiveClients.TryAdd(client);
+            return _activeClients.TryAdd(client);
         }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Akka.Monitoring
         /// <returns>true if the client was successfully removed, false otherwise</returns>
         public bool RemoveMonitor(AbstractActorMonitoringClient client)
         {
-            return ActiveClients.TryRemove(client);
+            return _activeClients.TryRemove(client);
         }
 
         /// <summary>
@@ -39,26 +39,26 @@ namespace Akka.Monitoring
         /// </summary>
         public void UpdateCounter(string metricName, int delta = 1, double sampleRate = 1.0)
         {
-            foreach(var client in ActiveClients)
+            foreach(var client in _activeClients)
                 client.UpdateCounter(metricName,delta,sampleRate);
         }
 
         /// <summary>
         /// Update a timer across all active monitoring clients
         /// </summary>
-        public void UpdateTimer(string metricName, long time)
+        public void UpdateTimer(string metricName, long time, double sampleRate = 1.0)
         {
-            foreach(var client in ActiveClients)
-                client.UpdateTimer(metricName, time);
+            foreach(var client in _activeClients)
+                client.UpdateTiming(metricName, time, sampleRate);
         }
 
         /// <summary>
         /// Update a gauge across all active monitoring clients
         /// </summary>
-        public void UpdateGauge(string metricName, int value)
+        public void UpdateGauge(string metricName, int value, double sampleRate = 1.0)
         {
-            foreach(var client in ActiveClients)
-                client.UpdateGauge(metricName, value);
+            foreach(var client in _activeClients)
+                client.UpdateGauge(metricName, value, sampleRate);
         }
 
         /// <summary>
@@ -66,8 +66,8 @@ namespace Akka.Monitoring
         /// </summary>
         public void DisposeAll()
         {
-            var clients = ActiveClients.ToArray();
-            ActiveClients.Clear();
+            var clients = _activeClients.ToArray();
+            _activeClients.Clear();
             foreach (var client in clients)
                 client.Dispose();
         }

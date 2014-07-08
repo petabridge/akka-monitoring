@@ -28,14 +28,16 @@ namespace Akka.Monitoring.Impl
         /// </summary>
         /// <param name="metricName">The name of the metric</param>
         /// <param name="time">The amount of time elasped in recording this timer</param>
-        void UpdateTimer(string metricName, long time);
+        /// <param name="sampleRate"></param>
+        void UpdateTiming(string metricName, long time, double sampleRate);
 
         /// <summary>
         /// Updates a Gauge, which is an arbitrary value that can be recorded. Might not be supported on your monitoring back-end. 
         /// </summary>
         /// <param name="metricName">The name of the metric</param>
         /// <param name="value">The amount to pass to the gauge</param>
-        void UpdateGauge(string metricName, int value);
+        /// <param name="sampleRate"></param>
+        void UpdateGauge(string metricName, int value, double sampleRate);
 
         /// <summary>
         /// A unique ID for this client instance, used to distinguish unique monitoring instances from eachother

@@ -13,6 +13,9 @@ namespace Akka.Monitoring
     /// </summary>
     public class ActorMonitor : IExtension
     {
+        /// <summary>
+        /// the internal registry used to track individual monitoring instances
+        /// </summary>
         internal MonitorRegistry Registry = new MonitorRegistry();
 
         /// <summary>
@@ -47,9 +50,9 @@ namespace Akka.Monitoring
         /// <param name="context">The context of the actor making this call</param>
         public void IncrementActorRestart(IActorContext context = null)
         {
-            Registry.UpdateCounter(CounterNames.TotalActorRestarts);
+            Registry.UpdateCounter(CounterNames.ActorRestarts);
             if(context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorRestartsPerSecond));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorRestarts));
         }
 
         /// <summary>
@@ -58,9 +61,9 @@ namespace Akka.Monitoring
         /// <param name="context">The context of the actor making this call</param>
         public void IncrementActorCreated(IActorContext context = null)
         {
-            Registry.UpdateCounter(CounterNames.TotalActors);
+            Registry.UpdateCounter(CounterNames.ActorsCreated);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorsCreatedPerSecond));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorsCreated));
         }
 
         /// <summary>
@@ -69,9 +72,9 @@ namespace Akka.Monitoring
         /// <param name="context">The context of the actor making this call</param>
         public void IncrementActorStopped(IActorContext context = null)
         {
-            Registry.UpdateCounter(CounterNames.TotalActors, -1);
+            Registry.UpdateCounter(CounterNames.ActorsStopped, 1);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorsStoppedPerSecond));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorsStopped));
         }
 
         /// <summary>
@@ -80,9 +83,9 @@ namespace Akka.Monitoring
         /// <param name="context">The context of the actor making this call</param>
         public void IncrementMessagesReceived(IActorContext context = null)
         {
-            Registry.UpdateCounter(CounterNames.MessagesPerSecond);
+            Registry.UpdateCounter(CounterNames.UnhandledMessages);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.MessagesPerSecond));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.UnhandledMessages));
         }
 
         /// <summary>
@@ -91,9 +94,9 @@ namespace Akka.Monitoring
         /// <param name="context">The context of the actor making this call</param>
         public void IncrementUnhandledMessage(IActorContext context = null)
         {
-            Registry.UpdateCounter(CounterNames.TotalUnhandledMessages);
+            Registry.UpdateCounter(CounterNames.UnhandledMessages);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.UnhandledMessagesPerSecond));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.UnhandledMessages));
         }
 
         /// <summary>
@@ -102,9 +105,9 @@ namespace Akka.Monitoring
         /// <param name="context">The context of the actor making this call</param>
         public void IncrementDeadLetters(IActorContext context = null)
         {
-            Registry.UpdateCounter(CounterNames.TotalDeadletters);
+            Registry.UpdateCounter(CounterNames.DeadLetters);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.DeadlettersPerSecond));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.DeadLetters));
         }
 
         /// <summary>
@@ -113,9 +116,9 @@ namespace Akka.Monitoring
         /// <param name="context">The context of the actor making this call</param>
         public void IncrementErrorsLogged(IActorContext context = null)
         {
-            Registry.UpdateCounter(CounterNames.TotalErrorMessages);
+            Registry.UpdateCounter(CounterNames.ErrorMessages);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ErrorMessagesPerSecond));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ErrorMessages));
         }
 
         /// <summary>
@@ -124,9 +127,9 @@ namespace Akka.Monitoring
         /// <param name="context">The context of the actor making this call</param>
         public void IncrementWarningsLogged(IActorContext context = null)
         {
-            Registry.UpdateCounter(CounterNames.TotalWarningMessages);
+            Registry.UpdateCounter(CounterNames.WarningMessages);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.WarningMessagesPerSecond));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.WarningMessages));
         }
 
         /// <summary>
@@ -135,9 +138,9 @@ namespace Akka.Monitoring
         /// <param name="context">The context of the actor making this call</param>
         public void IncrementDebugsLogged(IActorContext context = null)
         {
-            Registry.UpdateCounter(CounterNames.TotalDebugMessages);
+            Registry.UpdateCounter(CounterNames.DebugMessages);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.DebugMessagesPerSecond));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.DebugMessages));
         }
 
         /// <summary>
@@ -146,17 +149,61 @@ namespace Akka.Monitoring
         /// <param name="context">The context of the actor making this call</param>
         public void IncrementInfosLogged(IActorContext context = null)
         {
-            Registry.UpdateCounter(CounterNames.TotalInfoMessages);
+            Registry.UpdateCounter(CounterNames.InfoMessages);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.InfoMessagesPerSecond));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.InfoMessages));
         }
     }
 
+    /// <summary>
+    /// The extension class registered with an Akka.NET <see cref="ActorSystem"/>
+    /// </summary>
     public class ActorMonitoringExtension : ExtensionIdProvider<ActorMonitor>
     {
+
         public override ActorMonitor CreateExtension(ActorSystem system)
         {
-            throw new System.NotImplementedException();
+            try
+            { //shouldn't be able to create this actor multiple times
+                system.ActorOf<AkkaMonitoringLogger>(AkkaMonitoringLogger.LoggerName);
+            }
+            catch { }
+            return new ActorMonitor();
         }
+
+        #region Static methods
+
+        public static ActorMonitor Monitors(ActorSystem system)
+        {
+            return system.WithExtension<ActorMonitor, ActorMonitoringExtension>();
+        }
+
+        /// <summary>
+        /// Register a new <see cref="AbstractActorMonitoringClient"/> instance to use when monitoring Actor operations.
+        /// </summary>
+        /// <returns>true if the monitor was succeessfully registered, false otherwise.</returns>
+        public static bool RegisterMonitor(ActorSystem system, AbstractActorMonitoringClient client)
+        {
+            return Monitors(system).RegisterMonitor(client);
+        }
+
+        /// <summary>
+        /// Deregister an existing <see cref="AbstractActorMonitoringClient"/> instance so it no longer reports metrics to existing Actors.
+        /// </summary>
+        /// <returns>true if the monitor was succeessfully deregistered, false otherwise.</returns>
+        public static bool DeregisterMonitor(ActorSystem system, AbstractActorMonitoringClient client)
+        {
+            return Monitors(system).DeregisterMonitor(client);
+        }
+
+        /// <summary>
+        /// Terminates all existing monitors. You can add new ones after this call has been made.
+        /// </summary>
+        public static void TerminateMonitors(ActorSystem system)
+        {
+            Monitors(system).TerminateMonitors();
+        }
+
+        #endregion
     }
 }

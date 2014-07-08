@@ -8,8 +8,8 @@ namespace Akka.Monitoring.Impl
     public abstract class AbstractActorMonitoringClient : IActorMonitoringClient
     {
         public abstract void UpdateCounter(string metricName, int delta, double sampleRate);
-        public abstract void UpdateTimer(string metricName, long time);
-        public abstract void UpdateGauge(string metricName, int value);
+        public abstract void UpdateTiming(string metricName, long time, double sampleRate);
+        public abstract void UpdateGauge(string metricName, int value, double sampleRate);
         public abstract int MonitoringClientId { get; }
         
 

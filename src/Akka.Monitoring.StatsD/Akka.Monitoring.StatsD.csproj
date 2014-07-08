@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{34AACFDC-6EEF-4A03-B510-B6B50C1646AB}</ProjectGuid>
+    <ProjectGuid>{E1F18844-8C93-4661-BBBD-9257584DAECC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Akka.Monitoring</RootNamespace>
-    <AssemblyName>Akka.Monitoring</AssemblyName>
+    <RootNamespace>Akka.Monitoring.StatsD</RootNamespace>
+    <AssemblyName>Akka.Monitoring.StatsD</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
@@ -32,12 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Akka">
-      <HintPath>..\..\packages\Akka.0.6.0\lib\net45\Akka.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="NStatsD.Client">
+      <HintPath>..\..\packages\NStatsD.Client.1.4.1.0\lib\net40\NStatsD.Client.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -51,16 +47,18 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="ActorMonitor.cs" />
-    <Compile Include="AkkaMonitoringLogger.cs" />
-    <Compile Include="Impl\AbstractActorMonitoringClient.cs" />
-    <Compile Include="Impl\CounterNames.cs" />
-    <Compile Include="Impl\IActorMonitoringClient.cs" />
-    <Compile Include="MonitorRegistry.cs" />
+    <Compile Include="ActorStatsDMonitor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Akka.Counters\Akka.Monitoring.csproj">
+      <Project>{34aacfdc-6eef-4a03-b510-b6b50c1646ab}</Project>
+      <Name>Akka.Monitoring</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

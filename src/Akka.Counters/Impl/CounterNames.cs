@@ -10,41 +10,25 @@ namespace Akka.Monitoring.Impl
 
         #region Actor lifecycle counters
 
-        public const string ActorLifeCycleCategory = "Akka.NET Actor Lifecycle";
-        public const string TotalActorRestarts = "Total Actor Restarts";
-        public const string ActorRestartsPerSecond = "Actor Restarts / sec";
-        public const string TotalActors = "Total Actors";
-        public const string ActorsCreatedPerSecond = "Actors Created / sec";
-        public const string ActorsStoppedPerSecond = "Actors Stopped / sec";
+        public const string ActorRestarts = "akka.actor.restarts";
+        public const string ActorsCreated = "akka.actor.created";
+        public const string ActorsStopped = "akka.actor.stopped";
 
         #endregion
 
         #region Actor message counters
-
-        public const string ActorMessagesCategory = "Akka.NET Actor Messages";
-        public const string TotalMessages = "Total Messages";
-        public const string MessagesPerSecond = "Messages / sec";
-        public const string TotalDeadletters = "Total Deadletters";
-        public const string DeadlettersPerSecond = "Deadletters / sec";
-        public const string TotalUnhandledMessages = "Total Unhandled Messages";
-        public const string UnhandledMessagesPerSecond = "Unhandled Messages / sec";
+        public const string ReceivedMessages = "akka.messages.received";
+        public const string DeadLetters = "akka.messages.deadletters";
+        public const string UnhandledMessages = "akka.messages.unhandled";
 
         #endregion
 
         #region Actor logging counters
 
-        public const string ActorLogsCategory = "Akka.NET Log Messages";
-        public const string TotalDebugMessages = "Total Debug Messages";
-        public const string DebugMessagesPerSecond = "Debug Messages / sec";
-
-        public const string TotalInfoMessages = "Total Info Messages";
-        public const string InfoMessagesPerSecond = "Info Messages / sec";
-
-        public const string TotalWarningMessages = "Total Warning Messages";
-        public const string WarningMessagesPerSecond = "Warning Messages / sec";
-
-        public const string TotalErrorMessages = "Total Error Messages";
-        public const string ErrorMessagesPerSecond = "Error Messages / sec";
+        public const string DebugMessages = "akka.logging.debug";
+        public const string InfoMessages = "akka.logging.info";
+        public const string WarningMessages = "akka.logging.warning";
+        public const string ErrorMessages = "akka.logging.error";
 
         #endregion
 
@@ -57,7 +41,7 @@ namespace Akka.Monitoring.Impl
         public static string ActorSpecificCategory(IActorContext context, string metricName)
         {
             return
-                string.Format("{0} [Actor ({1} / {2})]", metricName, context.System.Name, context.Props.GetType());
+                string.Format("{0}.{1}.{2}", metricName, context.System.Name, context.Props.TypeName);
         }
 
     }
