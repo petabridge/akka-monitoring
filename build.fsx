@@ -111,7 +111,7 @@ module Nuget =
     // add Akka dependency for other projects
     let getAkkaDependency project =
         match project with
-        | "Akka" -> []
+        | "Akka.Monitoring" -> []
         | _ -> ["Akka.Monitoring", release.NugetVersion]
 
     // selected nuget description

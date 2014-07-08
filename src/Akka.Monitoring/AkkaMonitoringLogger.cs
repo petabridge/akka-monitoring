@@ -12,7 +12,7 @@ namespace Akka.Monitoring
         IHandle<DeadLetter>, IHandle<UnhandledMessage>,
         IHandle<LogEvent>
     {
-        public const string LoggerName = "AkkaMonitoringLOgger";
+        public const string LoggerName = "AkkaMonitoringLogger";
 
         protected override void PreStart()
         {

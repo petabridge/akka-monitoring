@@ -1,6 +1,9 @@
-﻿using Akka.Actor;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using Akka.Actor;
 using Akka.Event;
 using Akka.Monitoring.Impl;
+using Akka.Tools;
 
 namespace Akka.Monitoring
 {
@@ -192,13 +195,26 @@ namespace Akka.Monitoring
     /// The extension class registered with an Akka.NET <see cref="ActorSystem"/>
     /// </summary>
     public class ActorMonitoringExtension : ExtensionIdProvider<ActorMonitor>
-    {
+    { 
+        protected static ConcurrentSet<string> ActorSystemsWithLogger = new ConcurrentSet<string>();
+        protected static object LoggerLock = new object();
 
         public override ActorMonitor CreateExtension(ActorSystem system)
         {
             try
-            { //shouldn't be able to create this actor multiple times
-                system.ActorOf<AkkaMonitoringLogger>(AkkaMonitoringLogger.LoggerName);
+            {
+                //ActorSystem does not have a monitor logger yet
+                if (!ActorSystemsWithLogger.Contains(system.Name))
+                {
+                    lock (LoggerLock)
+                    {
+                        if (ActorSystemsWithLogger.TryAdd(system.Name))
+                        {
+                            system.ActorOf<AkkaMonitoringLogger>(AkkaMonitoringLogger.LoggerName);
+                        }
+                    }
+                }
+                
             }
             catch { }
             return new ActorMonitor();
