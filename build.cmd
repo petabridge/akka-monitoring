@@ -2,7 +2,7 @@
 
 .nuget\nuget.exe update -self
 
-.nuget\nuget.exe install FAKE -OutputDirectory packages -ExcludeVersion -Version 2.10.24
+.nuget\nuget.exe install FAKE -OutputDirectory packages -ExcludeVersion
 
 if not exist packages\SourceLink.Fake\tools\SourceLink.fsx ( 
   .nuget\nuget.exe install SourceLink.Fake -OutputDirectory packages -ExcludeVersion
