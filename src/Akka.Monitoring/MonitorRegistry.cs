@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using Akka.Monitoring.Impl;
-using Akka.Tools;
+using Akka.Util;
 
 namespace Akka.Monitoring
 {

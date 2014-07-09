@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Akka.Actor;
 using Akka.Event;
 using Akka.Monitoring.Impl;
-using Akka.Tools;
+using Akka.Util;
 
 namespace Akka.Monitoring
 {

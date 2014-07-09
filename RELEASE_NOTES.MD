@@ -1,3 +1,6 @@
+#### 0.2.5 Jul 09 2014
+* Upgraded Helios and Akka dependency
+
 #### 0.2.4 Jul 08 2014
 * Upgraded Helios and removed dependency on JSON.NET
 
