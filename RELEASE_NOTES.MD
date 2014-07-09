@@ -1,3 +1,6 @@
+#### 0.2.3 Jul 08 2014
+* Totally replaced our StatsD NuGet package
+
 #### 0.2.2 Jul 08 2014
 * Fixed the namespacing for StatsD monitoring so system-wide metrics aren't accidentally hidden
 
