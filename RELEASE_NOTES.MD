@@ -1,3 +1,7 @@
+#### 0.2.4 Jul 08 2014
+* Upgraded Helios and removed dependency on JSON.NET
+
+
 #### 0.2.3 Jul 08 2014
 * Totally replaced our StatsD NuGet package
 
