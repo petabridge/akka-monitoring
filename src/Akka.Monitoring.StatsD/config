@@ -3,7 +3,8 @@
   <configSections>
     <section name="statsD" type="NStatsD.StatsDConfigurationSection, NStatsD" />
   </configSections>
-  <statsD enabled="true" prefix="monitoringdemo.">
-    <server host="local.monitoring.markedup.com" port="8125" />
-  </statsD>
-</configuration>
+  
+  
+<statsD>
+    <server host="localhost" port="8125" />
+  </statsD></configuration>
