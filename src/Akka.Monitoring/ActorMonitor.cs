@@ -1,6 +1,4 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
-using Akka.Actor;
+﻿using Akka.Actor;
 using Akka.Event;
 using Akka.Monitoring.Impl;
 using Akka.Util;
@@ -22,6 +20,11 @@ namespace Akka.Monitoring
         internal MonitorRegistry Registry = new MonitorRegistry();
 
         /// <summary>
+        /// The SampleRate used by default across all calls unless otherwise specified
+        /// </summary>
+        internal double GlobalSampleRate = 1.0d;
+
+        /// <summary>
         /// Register a new <see cref="AbstractActorMonitoringClient"/> instance to use when monitoring Actor operations.
         /// </summary>
         /// <returns>true if the monitor was succeessfully registered, false otherwise.</returns>
@@ -40,6 +43,15 @@ namespace Akka.Monitoring
         }
 
         /// <summary>
+        /// Set a global sample rate for all counters
+        /// </summary>
+        /// <param name="sampleRate"></param>
+        public void SetGlobalSampleRate(double sampleRate)
+        {
+            GlobalSampleRate = sampleRate;
+        }
+
+        /// <summary>
         /// Terminates all existing monitors. You can add new ones after this call has been made.
         /// </summary>
         public void TerminateMonitors()
@@ -51,110 +63,130 @@ namespace Akka.Monitoring
         /// Increment the "Actor Restarts" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public void IncrementActorRestart(IActorContext context = null)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void IncrementActorRestart(IActorContext context = null, int value = 1, double? sampleRate = null)
         {
-            Registry.UpdateCounter(CounterNames.ActorRestarts);
+            Registry.UpdateCounter(CounterNames.ActorRestarts, value, sampleRate ?? GlobalSampleRate);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorRestarts));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorRestarts), value, sampleRate ?? GlobalSampleRate);
         }
 
         /// <summary>
         /// Increment the "Actors Created" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public void IncrementActorCreated(IActorContext context = null)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void IncrementActorCreated(IActorContext context = null, int value = 1, double? sampleRate = null)
         {
-            Registry.UpdateCounter(CounterNames.ActorsCreated);
+            Registry.UpdateCounter(CounterNames.ActorsCreated, value, sampleRate ?? GlobalSampleRate);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorsCreated));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorsCreated), value, sampleRate ?? GlobalSampleRate);
         }
 
         /// <summary>
         /// Increment the "Actors Stopped" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public void IncrementActorStopped(IActorContext context = null)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void IncrementActorStopped(IActorContext context = null, int value = 1, double? sampleRate = null)
         {
-            Registry.UpdateCounter(CounterNames.ActorsStopped, 1);
+            Registry.UpdateCounter(CounterNames.ActorsStopped, value, sampleRate ?? GlobalSampleRate);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorsStopped));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ActorsStopped), value, sampleRate ?? GlobalSampleRate);
         }
 
         /// <summary>
         /// Increment the "Messages Received" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public void IncrementMessagesReceived(IActorContext context = null)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void IncrementMessagesReceived(IActorContext context = null, int value = 1, double? sampleRate = null)
         {
-            Registry.UpdateCounter(CounterNames.ReceivedMessages);
+            Registry.UpdateCounter(CounterNames.ReceivedMessages, value, sampleRate ?? GlobalSampleRate);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ReceivedMessages));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ReceivedMessages), value, sampleRate ?? GlobalSampleRate);
         }
 
         /// <summary>
         /// Increment the "Unhandled Messages Received" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public void IncrementUnhandledMessage(IActorContext context = null)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void IncrementUnhandledMessage(IActorContext context = null, int value = 1, double? sampleRate = null)
         {
-            Registry.UpdateCounter(CounterNames.UnhandledMessages);
+            Registry.UpdateCounter(CounterNames.UnhandledMessages, value, sampleRate ?? GlobalSampleRate);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.UnhandledMessages));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.UnhandledMessages), value, sampleRate ?? GlobalSampleRate);
         }
 
         /// <summary>
         /// Increment the "Deadletters" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public void IncrementDeadLetters(IActorContext context = null)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void IncrementDeadLetters(IActorContext context = null, int value = 1, double? sampleRate = null)
         {
-            Registry.UpdateCounter(CounterNames.DeadLetters);
+            Registry.UpdateCounter(CounterNames.DeadLetters, value, sampleRate ?? GlobalSampleRate);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.DeadLetters));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.DeadLetters), value, sampleRate ?? GlobalSampleRate);
         }
 
         /// <summary>
         /// Increment the "Errors" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public void IncrementErrorsLogged(IActorContext context = null)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void IncrementErrorsLogged(IActorContext context = null, int value = 1, double? sampleRate = null)
         {
-            Registry.UpdateCounter(CounterNames.ErrorMessages);
+            Registry.UpdateCounter(CounterNames.ErrorMessages, value, sampleRate ?? GlobalSampleRate);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ErrorMessages));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.ErrorMessages), value, sampleRate ?? GlobalSampleRate);
         }
 
         /// <summary>
         /// Increment the "Warnings" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public void IncrementWarningsLogged(IActorContext context = null)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void IncrementWarningsLogged(IActorContext context = null, int value = 1, double? sampleRate = null)
         {
-            Registry.UpdateCounter(CounterNames.WarningMessages);
+            Registry.UpdateCounter(CounterNames.WarningMessages, value, sampleRate ?? GlobalSampleRate);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.WarningMessages));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.WarningMessages), value, sampleRate ?? GlobalSampleRate);
         }
 
         /// <summary>
         /// Increment the "Debugs" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public void IncrementDebugsLogged(IActorContext context = null)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void IncrementDebugsLogged(IActorContext context = null, int value = 1, double? sampleRate = null)
         {
-            Registry.UpdateCounter(CounterNames.DebugMessages);
+            Registry.UpdateCounter(CounterNames.DebugMessages, value, sampleRate ?? GlobalSampleRate);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.DebugMessages));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.DebugMessages), value, sampleRate ?? GlobalSampleRate);
         }
 
         /// <summary>
         /// Increment the "Infos" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public void IncrementInfosLogged(IActorContext context = null)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public void IncrementInfosLogged(IActorContext context = null, int value = 1, double? sampleRate = null)
         {
-            Registry.UpdateCounter(CounterNames.InfoMessages);
+            Registry.UpdateCounter(CounterNames.InfoMessages, value, sampleRate ?? GlobalSampleRate);
             if (context != null)
-                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.InfoMessages));
+                Registry.UpdateCounter(CounterNames.ActorSpecificCategory(context, CounterNames.InfoMessages), value, sampleRate ?? GlobalSampleRate);
         }
 
         /// <summary>

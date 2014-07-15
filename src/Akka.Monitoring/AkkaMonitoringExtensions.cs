@@ -17,93 +17,121 @@ namespace Akka.Monitoring
         }
 
         /// <summary>
+        /// Set a global sample rate for all counters
+        /// </summary>
+        /// <param name="context">The context of the actor making this call</param>
+        /// <param name="sampleRate">The sample rate to use across all monitoring calls. 100% by default.</param>
+        public static void SetGlobalSampleRate(this IActorContext context, double sampleRate)
+        {
+            GetMonitor(context).SetGlobalSampleRate(sampleRate);
+        }
+
+        /// <summary>
         /// Increment the "Actor Restarts" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public static void IncrementActorRestart(this IActorContext context)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public static void IncrementActorRestart(this IActorContext context, int value = 1, double? sampleRate = null)
         {
-            GetMonitor(context).IncrementActorRestart(context);
+            GetMonitor(context).IncrementActorRestart(context, value, sampleRate);
         }
 
         /// <summary>
         /// Increment the "Actors Created" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public static void IncrementActorCreated(this IActorContext context)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public static void IncrementActorCreated(this IActorContext context, int value = 1, double? sampleRate = null)
         {
-            GetMonitor(context).IncrementActorCreated(context);
+            GetMonitor(context).IncrementActorCreated(context, value, sampleRate);
         }
 
         /// <summary>
         /// Increment the "Actors Stopped" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public static void IncrementActorStopped(this IActorContext context)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public static void IncrementActorStopped(this IActorContext context, int value = 1, double? sampleRate = null)
         {
-            GetMonitor(context).IncrementActorStopped(context);
+            GetMonitor(context).IncrementActorStopped(context, value, sampleRate);
         }
 
         /// <summary>
         /// Increment the "Messages Received" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public static void IncrementMessagesReceived(this IActorContext context)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public static void IncrementMessagesReceived(this IActorContext context, int value = 1, double? sampleRate = null)
         {
-            GetMonitor(context).IncrementMessagesReceived(context);
+            GetMonitor(context).IncrementMessagesReceived(context, value, sampleRate);
         }
 
         /// <summary>
         /// Increment the "Unhandled Messages Received" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public static void IncrementUnhandledMessage(this IActorContext context)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public static void IncrementUnhandledMessage(this IActorContext context, int value = 1, double? sampleRate = null)
         {
-            GetMonitor(context).IncrementUnhandledMessage(context);
+            GetMonitor(context).IncrementUnhandledMessage(context, value, sampleRate);
         }
 
         /// <summary>
         /// Increment the "Deadletters" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public static void IncrementDeadLetters(this IActorContext context)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public static void IncrementDeadLetters(this IActorContext context, int value = 1, double? sampleRate = null)
         {
-            GetMonitor(context).IncrementDeadLetters(context);
+            GetMonitor(context).IncrementDeadLetters(context, value, sampleRate);
         }
 
         /// <summary>
         /// Increment the "Errors" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public static void IncrementErrorsLogged(this IActorContext context)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public static void IncrementErrorsLogged(this IActorContext context, int value = 1, double? sampleRate = null)
         {
-            GetMonitor(context).IncrementErrorsLogged(context);
+            GetMonitor(context).IncrementErrorsLogged(context, value, sampleRate);
         }
 
         /// <summary>
         /// Increment the "Warnings" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public static void IncrementWarningsLogged(this IActorContext context)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public static void IncrementWarningsLogged(this IActorContext context, int value = 1, double? sampleRate = null)
         {
-            GetMonitor(context).IncrementWarningsLogged(context);
+            GetMonitor(context).IncrementWarningsLogged(context, value, sampleRate);
         }
 
         /// <summary>
         /// Increment the "Debugs" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public static void IncrementDebugsLogged(this IActorContext context)
+        /// <param name="value">The value of the counter. 1 by default.</param>
+        /// <param name="sampleRate">The sample rate. 100% by default.</param>
+        public static void IncrementDebugsLogged(this IActorContext context, int value = 1, double? sampleRate = null)
         {
-            GetMonitor(context).IncrementDebugsLogged(context);
+            GetMonitor(context).IncrementDebugsLogged(context, value, sampleRate);
         }
 
         /// <summary>
         /// Increment the "Infos" counter
         /// </summary>
         /// <param name="context">The context of the actor making this call</param>
-        public static void IncrementInfosLogged(this IActorContext context)
+        public static void IncrementInfosLogged(this IActorContext context, int value = 1, double? sampleRate = null)
         {
-            GetMonitor(context).IncrementInfosLogged(context);
+            GetMonitor(context).IncrementInfosLogged(context, value, sampleRate);
         }
 
         /// <summary>
@@ -137,7 +165,7 @@ namespace Akka.Monitoring
         /// <param name="metricName">The name of the timing as it will appear in your monitoring system</param>
         /// <param name="value">The value of the gauge</param>
         /// <param name="sampleRate">The sample rate. 100% by default.</param>
-        public static void Gauge(this IActorContext context,string metricName, int value = 1, double sampleRate = 1)
+        public static void Gauge(this IActorContext context, string metricName, int value = 1, double sampleRate = 1)
         {
             GetMonitor(context).Gauge(metricName, value, sampleRate, context);
         }

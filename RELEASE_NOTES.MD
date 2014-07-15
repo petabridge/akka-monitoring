@@ -1,3 +1,9 @@
+#### 0.3.0 Jul 15 2014
+* Upgraded NStatsD.HighPerformance dependency
+* Removed Helios dependency
+* Added ability to set sample rates on all calls
+* Added `SetGlobalSampleRate` method to enable setting a sample rate globally across all calls
+
 #### 0.2.5 Jul 09 2014
 * Upgraded Helios and Akka dependency
 
