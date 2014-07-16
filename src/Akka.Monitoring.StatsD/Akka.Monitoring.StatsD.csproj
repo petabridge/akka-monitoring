@@ -32,9 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NStatsD, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="NStatsD, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\NStatsD.HighPerformance.1.2\lib\net45\NStatsD.dll</HintPath>
+      <HintPath>..\..\packages\NStatsD.HighPerformance.1.2.1\lib\net45\NStatsD.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

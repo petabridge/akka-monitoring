@@ -1,3 +1,6 @@
+#### 0.3.1 Jul 15 2014
+* Upgraded NStatsD.HighPerformance dependency (again)
+
 #### 0.3.0 Jul 15 2014
 * Upgraded NStatsD.HighPerformance dependency
 * Removed Helios dependency
