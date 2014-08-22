@@ -1,3 +1,6 @@
+#### 0.3.2 Aug 22 2014
+* Upgraded to latest version of Akka.NET due to breaking changes made to extensions interface...
+
 #### 0.3.1 Jul 15 2014
 * Upgraded NStatsD.HighPerformance dependency (again)
 

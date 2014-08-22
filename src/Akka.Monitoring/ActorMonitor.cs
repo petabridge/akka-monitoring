@@ -240,7 +240,7 @@ namespace Akka.Monitoring
         protected static ConcurrentSet<string> ActorSystemsWithLogger = new ConcurrentSet<string>();
         protected static object LoggerLock = new object();
 
-        public override ActorMonitor CreateExtension(ActorSystem system)
+        public override ActorMonitor CreateExtension(ExtendedActorSystem system)
         {
             try
             {

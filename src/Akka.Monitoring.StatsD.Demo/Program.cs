@@ -24,7 +24,7 @@ namespace Akka.Monitoring.StatsD.Demo
             Console.WriteLine("Received: {0}", message);
             if (message == "Goodbye")
             {
-                Context.Self.Tell(new PoisonPill());
+                Context.Self.Tell(PoisonPill.Instance);
                 Program.ManualResetEvent.Set(); //allow the program to exit
             }
             else
@@ -51,7 +51,7 @@ namespace Akka.Monitoring.StatsD.Demo
             Context.IncrementMessagesReceived();
             Console.WriteLine("Received: {0}", message);
             Sender.Tell("Goodbye");
-            Context.Self.Tell(new PoisonPill());
+            Context.Self.Tell(PoisonPill.Instance);
         }
 
         public void Handle(Tuple<ActorRef, string> message)

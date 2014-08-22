@@ -22,7 +22,7 @@ let configuration = "Release"
 
 let release = ReleaseNotesHelper.LoadReleaseNotes "RELEASE_NOTES.md"
 
-    //--------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------
 // Directories
 
 let binDir = "bin"
