@@ -32,7 +32,7 @@ namespace Akka.Monitoring.StatsD.Demo
         }
     }
 
-    class GoodbyeActor : TypedActor, IHandle<Tuple<ActorRef,string>>, IHandle<string>
+    class GoodbyeActor : TypedActor, IHandle<Tuple<IActorRef,string>>, IHandle<string>
     {
         protected override void PreStart()
         {
@@ -54,7 +54,7 @@ namespace Akka.Monitoring.StatsD.Demo
             Context.Self.Tell(PoisonPill.Instance);
         }
 
-        public void Handle(Tuple<ActorRef, string> message)
+        public void Handle(Tuple<IActorRef, string> message)
         {
             Context.IncrementMessagesReceived();
             message.Item1.Tell("Starting");
@@ -90,7 +90,7 @@ namespace Akka.Monitoring.StatsD.Demo
                 count--;
             }
             Console.WriteLine("Starting a conversation between actors");
-            goodbye.Tell(new Tuple<ActorRef,string>(hello,"Start"));
+            goodbye.Tell(new Tuple<IActorRef,string>(hello,"Start"));
             while (ManualResetEvent.WaitOne())
             {
                 Console.WriteLine("Shutting down...");
