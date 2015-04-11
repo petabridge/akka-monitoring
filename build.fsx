@@ -12,7 +12,7 @@ open Fake.FileUtils
 
 let product = "Akka.NET Monitoring"
 let authors = [ "Aaron Stannard" ]
-let copyright = "Copyright © Aaron Stannard 2013-2014"
+let copyright = "Copyright © Aaron Stannard 2013-2015"
 let company = "Akka.net"
 let description = "Pluggable monitoring system extension for Akka.NET actor systems"
 let tags = ["akka";"actors";"actor";"model";"Akka";"concurrency";"monitoring";"statsd";]
@@ -134,10 +134,12 @@ Target "Nuget" (fun _ ->
                         OutputPath = outputDir
                         WorkingDir = workingDir
                         AccessKey = getBuildParamOrDefault "nugetkey" ""
-                        Publish = hasBuildParam "nugetkey"
-                        
-                        Dependencies = getDependencies packages @ getAkkaDependency project })
+                        Publish = hasBuildParam "nugetkey"                        
+                        Dependencies = getDependencies packages @ getAkkaDependency project 
+                        })
                 nuspec
+
+        printfn "%s" nuspec
         // pack nuget (with only dll and xml files)
 
         CleanDir libDir

@@ -1,3 +1,6 @@
+#### 0.3.3 Apr 10 2015
+* Akka.Monitoring for Akka.NET v1.0!
+
 #### 0.3.2 Aug 22 2014
 * Upgraded to latest version of Akka.NET due to breaking changes made to extensions interface...
 
