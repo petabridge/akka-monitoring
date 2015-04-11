@@ -3,8 +3,12 @@
 
 open System
 open System.IO
+
+open Fake.TaskRunnerHelper
 open Fake
 open Fake.FileUtils
+
+cd __SOURCE_DIRECTORY__
 
 //--------------------------------------------------------------------------------
 // Information about the project for Nuget and Assembly info files
@@ -12,7 +16,7 @@ open Fake.FileUtils
 
 let product = "Akka.NET Monitoring"
 let authors = [ "Aaron Stannard" ]
-let copyright = "Copyright © Aaron Stannard 2013-2014"
+let copyright = "Copyright © Aaron Stannard 2013-2015"
 let company = "Akka.net"
 let description = "Pluggable monitoring system extension for Akka.NET actor systems"
 let tags = ["akka";"actors";"actor";"model";"Akka";"concurrency";"monitoring";"statsd";]
@@ -20,7 +24,9 @@ let configuration = "Release"
 
 // Read release notes and version
 
-let release = ReleaseNotesHelper.LoadReleaseNotes "RELEASE_NOTES.md"
+let release =
+    File.ReadLines "RELEASE_NOTES.md"
+    |> ReleaseNotesHelper.parseReleaseNotes
 
 //--------------------------------------------------------------------------------
 // Directories
@@ -29,6 +35,9 @@ let binDir = "bin"
 let testOutput = "TestResults"
 
 let nugetDir = binDir @@ "nuget"
+let workingDir = binDir @@ "build"
+let libDir = workingDir @@ @"lib\net45\"
+let nugetExe = FullName @".nuget\NuGet.exe"
 
 //--------------------------------------------------------------------------------
 // Clean build results
@@ -108,74 +117,116 @@ Target "CleanNuget" (fun _ ->
 // Pack nuget for all projects
 // Publish to nuget.org if nugetkey is specified
 
-Target "Nuget" (fun _ ->
+let createNugetPackages _ =
+    let removeDir dir = 
+        let del _ = 
+            DeleteDir dir
+            not (directoryExists dir)
+        runWithRetries del 3 |> ignore
+
+    ensureDirectory nugetDir
     for nuspec in !! "src/**/*.nuspec" do
+        printfn "Creating nuget packages for %s" nuspec
+        
+        CleanDir workingDir
+
         let project = Path.GetFileNameWithoutExtension nuspec 
         let projectDir = Path.GetDirectoryName nuspec
+        let projectFile = (!! (projectDir @@ project + ".*sproj")) |> Seq.head
         let releaseDir = projectDir @@ @"bin\Release"
-        let packages = projectDir @@ "packages.config"
-        
-        let workingDir = binDir @@ "build" @@ project
-        let libDir = workingDir @@ @"lib\net45\"    
-        CleanDir workingDir        
+        let packages = projectDir @@ "packages.config"        
+        let packageDependencies = if (fileExists packages) then (getDependencies packages) else []
+        let dependencies = packageDependencies @ getAkkaDependency project
+        let releaseVersion = release.NugetVersion
+        let desc = description project
 
-        let pack outputDir =
+        let pack outputDir  =
             NuGetHelper.NuGet
                 (fun p ->
                     { p with
-                        Description = description project
+                        Description = desc
                         Authors = authors
                         Copyright = copyright
                         Project =  project
                         Properties = ["Configuration", "Release"]
                         ReleaseNotes = release.Notes |> String.concat "\n"
-                        Version = release.NugetVersion
+                        Version = releaseVersion
                         Tags = tags |> String.concat " "
                         OutputPath = outputDir
                         WorkingDir = workingDir
-                        AccessKey = getBuildParamOrDefault "nugetkey" ""
-                        Publish = hasBuildParam "nugetkey"
-                        
-                        Dependencies = getDependencies packages @ getAkkaDependency project })
+                        Dependencies = dependencies })
                 nuspec
-        // pack nuget (with only dll and xml files)
 
-        CleanDir libDir
+        // Copy dll, pdb and xml to libdir = workingDir/lib/net45/
+        ensureDirectory libDir
         !! (releaseDir @@ project + ".dll")
+        ++ (releaseDir @@ project + ".pdb")
         ++ (releaseDir @@ project + ".xml")
+        ++ (releaseDir @@ project + ".ExternalAnnotations.xml")
         |> CopyFiles libDir
 
-        pack nugetDir
-
-        // pack symbol packages (adds .pdb and sources)
-
-        !! (releaseDir @@ project + ".pdb")
-        |> CopyFiles libDir
-
-        let nugetSrcDir = workingDir @@ @"src\"
-        CreateDir nugetSrcDir
+        // Copy all src-files (.cs and .fs files) to workingDir/src
+        let nugetSrcDir = workingDir @@ @"src/"
+        // CreateDir nugetSrcDir
 
         let isCs = hasExt ".cs"
         let isFs = hasExt ".fs"
         let isAssemblyInfo f = (filename f).Contains("AssemblyInfo")
         let isSrc f = (isCs f || isFs f) && not (isAssemblyInfo f) 
-
         CopyDir nugetSrcDir projectDir isSrc
-        DeleteDir (nugetSrcDir @@ "obj")
-        DeleteDir (nugetSrcDir @@ "bin")
-
-        // pack in working dir
-        pack workingDir
         
-        // copy to nuget directory with .symbols.nupkg extension
-        let pkg = (!! (workingDir @@ "*.nupkg")) |> Seq.head
+        //Remove workingDir/src/obj and workingDir/src/bin
+        removeDir (nugetSrcDir @@ "obj")
+        removeDir (nugetSrcDir @@ "bin")
 
-        let destFile = pkg |> filename |> changeExt ".symbols.nupkg" 
-        let dest = nugetDir @@ destFile
+        // Create both normal nuget package and symbols nuget package. 
+        // Uses the files we copied to workingDir and outputs to nugetdir
+        printfn "nugetDir %s" nugetDir
+        pack nugetDir
         
-        CopyFile dest pkg
-)
+        removeDir workingDir
 
+let publishNugetPackages _ = 
+    let rec publishPackage url accessKey trialsLeft packageFile =
+        let tracing = enableProcessTracing
+        enableProcessTracing <- false
+        let args p =
+            match p with
+            | (pack, key, "") -> sprintf "push \"%s\" %s" pack key
+            | (pack, key, url) -> sprintf "push \"%s\" %s -source %s" pack key url
+
+        tracefn "Pushing %s Attempts left: %d" (FullName packageFile) trialsLeft
+        try 
+            let result = ExecProcess (fun info -> 
+                    info.FileName <- nugetExe
+                    info.WorkingDirectory <- (Path.GetDirectoryName (FullName packageFile))
+                    info.Arguments <- args (packageFile, accessKey,url)) (System.TimeSpan.FromMinutes 1.0)
+            enableProcessTracing <- tracing
+            if result <> 0 then failwithf "Error during NuGet symbol push. %s %s" nugetExe (args (packageFile, accessKey,url))
+        with exn -> 
+            if (trialsLeft > 0) then (publishPackage url accessKey (trialsLeft-1) packageFile)
+            else raise exn
+    let shouldPushNugetPackages = hasBuildParam "nugetkey"
+    
+    if (shouldPushNugetPackages) then
+        printfn "Pushing nuget packages"
+        if shouldPushNugetPackages then
+            let normalPackages= 
+                !! (nugetDir @@ "*.nupkg") 
+                -- (nugetDir @@ "*.symbols.nupkg") |> Seq.sortBy(fun x -> x.ToLower())
+            for package in normalPackages do
+                publishPackage (getBuildParamOrDefault "nugetpublishurl" "") (getBuildParam "nugetkey") 3 package
+
+
+Target "Nuget" <| fun _ -> 
+    createNugetPackages()
+    publishNugetPackages()
+
+Target "CreateNuget" <| fun _ -> 
+    createNugetPackages()
+
+Target "PublishNuget" <| fun _ -> 
+    publishNugetPackages()
 //--------------------------------------------------------------------------------
 //  Target dependencies
 //--------------------------------------------------------------------------------
