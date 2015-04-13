@@ -46,6 +46,8 @@ Target "Clean" (fun _ ->
     CleanDir binDir
 )
 
+Target "Restore" RestorePackages
+
 //--------------------------------------------------------------------------------
 // Generate AssemblyInfo files with the version for release notes 
 
@@ -234,7 +236,7 @@ Target "PublishNuget" <| fun _ ->
 Target "All" DoNothing
 
 // build dependencies
-"Clean" ==> "AssemblyInfo" ==> "Build" ==> "CopyOutput" ==> "BuildRelease"
+"Clean" ==> "Restore" ==> "AssemblyInfo" ==> "Build" ==> "CopyOutput" ==> "BuildRelease"
 
 // nuget dependencies
 "CleanNuget" ==> "BuildRelease" ==> "Nuget"
