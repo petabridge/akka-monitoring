@@ -181,9 +181,9 @@ let createNugetPackages _ =
 
         // Create both normal nuget package and symbols nuget package. 
         // Uses the files we copied to workingDir and outputs to nugetdir
-        printfn "nugetDir %s" nugetDir
         pack nugetDir
         
+        removeDir libDir
         removeDir workingDir
 
 let publishNugetPackages _ = 
