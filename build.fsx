@@ -183,6 +183,8 @@ let createNugetPackages _ =
         // Uses the files we copied to workingDir and outputs to nugetdir
         pack nugetDir
         
+        removeDir nugetSrcDir
+        removeDir libDir
         removeDir workingDir
 
 let publishNugetPackages _ = 
