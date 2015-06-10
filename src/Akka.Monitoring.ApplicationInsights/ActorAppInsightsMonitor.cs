@@ -30,7 +30,7 @@ namespace Akka.Monitoring.ApplicationInsights
                 { "sampleRate", sampleRate.ToString() }
             };
            
-            _client.TrackMetric(metricName, delta, properties);
+            _client.TrackEvent(metricName, properties);
         }
 
         public override void UpdateTiming(string metricName, long time, double sampleRate)
