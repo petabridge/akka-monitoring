@@ -3,7 +3,7 @@ Akka.Monitoring
 Pluggable monitoring system instrumentation for [Akka.NET](https://github.com/akkadotnet/akka.net "Port of Akka actors for .NET") actor systems.
 
 ## What it is
-Akka.Monitoring is an **ActorSystem extension** for Akka.NET that exposes a pluggable layer for reporting performance metrics from actors back to a monitoring system such as [Etsy's StatsD](https://github.com/etsy/statsd) or [Graphite](http://graphite.readthedocs.org/en/latest/).
+Akka.Monitoring is an **ActorSystem extension** for Akka.NET that exposes a pluggable layer for reporting performance metrics from actors back to a monitoring system such as [Etsy's StatsD](https://github.com/etsy/statsd) or [Graphite](http://graphite.readthedocs.org/en/latest/) or [Microsoft AppInsights](https://www.visualstudio.com/features/application-insights-vs).
 
 Akka.Monitoring can report to multiple monitoring systems simultaneously and it can report different metrics for different discrete ActorSystems inside the same process without any collisions. It offers high-performance, a simple interface, and the ability to be easily extended in order to support new monitoring systems.
 
@@ -24,6 +24,7 @@ metrics for individual actor types.** That way you can identify overly chatty or
 Currently Akka.Monitoring supports the following monitoring systems out of the box:
 
 1. **[StatsD](https://github.com/etsy/statsd)** - via a lightweight dependency on [NStatsD](https://github.com/robbihun/NStatsD.Client "A .NET 4.0 client for Etsy's StatsD server.").
+2. **[Microsoft AppInsights](https://www.visualstudio.com/features/application-insights-vs)
 
 If you don't have any monitoring systems configured to run with Akka.Monitoring, no problem - the extension will no-op all stat collection calls by default.
 
@@ -32,7 +33,11 @@ If you don't have any monitoring systems configured to run with Akka.Monitoring,
 First thing you want to do is [install the Akka.Monitoring packages via NuGet](https://www.nuget.org/packages/Akka.Monitoring/):
 
     Install-Package Akka.Monitoring
+
+And then install a specific implementation
+
     Install-Package Akka.Monitoring.StatsD
+    Install-Package Akka.Monitoring.ApplicationInsights
 
 ### Register monitors with your `ActorSystem`
 
