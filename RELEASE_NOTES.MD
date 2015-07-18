@@ -1,3 +1,10 @@
+#### 0.4.0 Apr 10 2015
+* Added support for Azure Application Insights
+
+To install that page, just type
+
+    PM> Install-package Akka.Monitoring.ApplicationInsights
+
 #### 0.3.3 Apr 10 2015
 * Akka.Monitoring for Akka.NET v1.0!
 
