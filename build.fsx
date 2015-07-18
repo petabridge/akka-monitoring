@@ -36,7 +36,6 @@ let testOutput = "TestResults"
 
 let nugetDir = binDir @@ "nuget"
 let workingDir = binDir @@ "build"
-let libDir = workingDir @@ @"lib\net45\"
 let nugetExe = FullName @".nuget\NuGet.exe"
 
 //--------------------------------------------------------------------------------
@@ -120,17 +119,25 @@ Target "CleanNuget" (fun _ ->
 // Publish to nuget.org if nugetkey is specified
 
 let createNugetPackages _ =
+    let mutable dirName = 1
     let removeDir dir = 
         let del _ = 
             DeleteDir dir
             not (directoryExists dir)
         runWithRetries del 3 |> ignore
 
+    let getDirName workingDir dirCount =
+        workingDir + dirCount.ToString()
+
+    CleanDir workingDir
+
     ensureDirectory nugetDir
     for nuspec in !! "src/**/*.nuspec" do
+        let ourWorkingDir = getDirName workingDir dirName
+
         printfn "Creating nuget packages for %s" nuspec
         
-        CleanDir workingDir
+        ensureDirectory ourWorkingDir
 
         let project = Path.GetFileNameWithoutExtension nuspec 
         let projectDir = Path.GetDirectoryName nuspec
@@ -155,11 +162,12 @@ let createNugetPackages _ =
                         Version = releaseVersion
                         Tags = tags |> String.concat " "
                         OutputPath = outputDir
-                        WorkingDir = workingDir
+                        WorkingDir = ourWorkingDir
                         Dependencies = dependencies })
                 nuspec
 
         // Copy dll, pdb and xml to libdir = workingDir/lib/net45/
+        let libDir = ourWorkingDir @@ @"lib\net45\"
         ensureDirectory libDir
         !! (releaseDir @@ project + ".dll")
         ++ (releaseDir @@ project + ".pdb")
@@ -168,7 +176,7 @@ let createNugetPackages _ =
         |> CopyFiles libDir
 
         // Copy all src-files (.cs and .fs files) to workingDir/src
-        let nugetSrcDir = workingDir @@ @"src/"
+        let nugetSrcDir = ourWorkingDir @@ @"src/"
         // CreateDir nugetSrcDir
 
         let isCs = hasExt ".cs"
@@ -185,7 +193,8 @@ let createNugetPackages _ =
         // Uses the files we copied to workingDir and outputs to nugetdir
         pack nugetDir
         
-        removeDir workingDir
+        //removeDir workingDir
+        dirName <- dirName + 1
 
 let publishNugetPackages _ = 
     let rec publishPackage url accessKey trialsLeft packageFile =
