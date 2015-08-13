@@ -27,6 +27,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Monitoring.Application
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Monitoring.ApplicationInsights.Demo", "src\Akka.Monitoring.ApplicationInsights.Demo\Akka.Monitoring.ApplicationInsights.Demo.csproj", "{40796FA1-09AA-4527-B983-2F047B01DF8E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Monitoring.PerformanceCounters", "src\Akka.Monitoring.PerformanceCounters\Akka.Monitoring.PerformanceCounters.csproj", "{D73890EF-D9CF-483E-BF7F-07C066621331}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Akka.Monitoring.PerformanceCounters.Demo", "src\Akka.Monitoring.PerformanceCounters.Demo\Akka.Monitoring.PerformanceCounters.Demo.csproj", "{21AD2A03-C07A-4651-9CF7-2AA6FDD22FC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +57,14 @@ Global
 		{40796FA1-09AA-4527-B983-2F047B01DF8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40796FA1-09AA-4527-B983-2F047B01DF8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40796FA1-09AA-4527-B983-2F047B01DF8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D73890EF-D9CF-483E-BF7F-07C066621331}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D73890EF-D9CF-483E-BF7F-07C066621331}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D73890EF-D9CF-483E-BF7F-07C066621331}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D73890EF-D9CF-483E-BF7F-07C066621331}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21AD2A03-C07A-4651-9CF7-2AA6FDD22FC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21AD2A03-C07A-4651-9CF7-2AA6FDD22FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21AD2A03-C07A-4651-9CF7-2AA6FDD22FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21AD2A03-C07A-4651-9CF7-2AA6FDD22FC0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -62,5 +74,7 @@ Global
 		{9AA04DC5-796E-4645-B65C-4271DDFD9098} = {78A6ADD3-D924-4872-979B-C3161A97F491}
 		{E2933E70-D188-49AF-A48B-22CF96A7CD00} = {78A6ADD3-D924-4872-979B-C3161A97F491}
 		{40796FA1-09AA-4527-B983-2F047B01DF8E} = {78A6ADD3-D924-4872-979B-C3161A97F491}
+		{D73890EF-D9CF-483E-BF7F-07C066621331} = {78A6ADD3-D924-4872-979B-C3161A97F491}
+		{21AD2A03-C07A-4651-9CF7-2AA6FDD22FC0} = {78A6ADD3-D924-4872-979B-C3161A97F491}
 	EndGlobalSection
 EndGlobal
