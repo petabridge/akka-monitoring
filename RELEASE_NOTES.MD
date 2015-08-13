@@ -1,7 +1,13 @@
+#### 0.5.0 Aug 13 2015
+* Added support for Windows Performance Counters!
+
+To install that package, just type
+    PM> Install-Package Akka.Monitoring.PerformanceCounters
+
 #### 0.4.0 Apr 10 2015
 * Added support for Azure Application Insights
 
-To install that page, just type
+To install that package, just type
 
     PM> Install-package Akka.Monitoring.ApplicationInsights
 
