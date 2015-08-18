@@ -101,15 +101,15 @@ namespace Akka.Monitoring.PerformanceCounters
             foreach (var akkaMetric in akkaMetrics)
             {
                 akkaMetric.RegisterIn(ccdc);
-            }
+            }            
 
-            if (PerformanceCounterCategory.Exists(PerformanceCountersCategoryName))
+            if (!PerformanceCounterCategory.Exists(PerformanceCountersCategoryName))
             {
-                PerformanceCounterCategory.Delete(PerformanceCountersCategoryName);
+                //Only create if it doesn't exist.
+                PerformanceCounterCategory.Create(PerformanceCountersCategoryName, "", PerformanceCounterCategoryType.MultiInstance, ccdc);
             }
 
-            PerformanceCounterCategory.Create(PerformanceCountersCategoryName, "",
-                PerformanceCounterCategoryType.MultiInstance, ccdc);
+            
         }
 
         //extracts metric object and instance name ("_total" or ActorSpecificCategory)
