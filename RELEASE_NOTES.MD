@@ -1,3 +1,10 @@
+#### 0.5.1 Aug 19 2015
+Bugfix release for 0.5.0
+
+Fixes:
+
+* Resolves [Unauthorized access error when attempting to run Performance Counters within IIS (ASP.Net) application](https://github.com/petabridge/akka-monitoring/issues/16)
+
 #### 0.5.0 Aug 13 2015
 * Added support for Windows Performance Counters!
 
