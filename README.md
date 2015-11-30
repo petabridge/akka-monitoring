@@ -143,6 +143,10 @@ In order to create custom counters, timing metrics and gauges, you need to provi
 
 Metric names will become performance counter names, so make sure they are unique among Akka Pefmormance Counters Category.
 
+One gotcha to be aware of is that .NET performance counters cannot be added to an existing category. If you have to add counters to categories that already exist, the only way you can do so is to delete the category and re-create it with all of its contents. So if you find that you are adding custom metrics and nothing is appearing in Perfmon then you may need to delete the Akka performance counter category. Additionally, performance counters don't always show up straightaway so you may need to give it some time. To delete the Counter category you can remove the following key in the windows registry:
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Akka\Performance (not recommended in production code!)
+
 ## Extending Akka.Monitoring
 Have a different monitoring system you want to use? It's easy to integrate into Akka.Monitoring - just implement your own subclass from `AbstractActorMonitoringClient` ([source](https://github.com/Aaronontheweb/akka-monitoring/blob/master/src/Akka.Monitoring/Impl/AbstractActorMonitoringClient.cs)) and follow the registration steps above.
 
