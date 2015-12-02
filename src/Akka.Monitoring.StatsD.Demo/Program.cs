@@ -71,7 +71,7 @@ namespace Akka.Monitoring.StatsD.Demo
         {
    
             _system = ActorSystem.Create("akka-performance-demo");
-            var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_system, new ActorStatsDMonitor());
+            var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_system, new ActorStatsDMonitor("localhost"));
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Starting up actor system...");
             var goodbye = _system.ActorOf<GoodbyeActor>();
