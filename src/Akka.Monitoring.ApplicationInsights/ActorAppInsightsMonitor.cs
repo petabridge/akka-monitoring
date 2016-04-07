@@ -22,6 +22,12 @@ namespace Akka.Monitoring.ApplicationInsights
             };
             _client.Context.Device.OperatingSystem = Environment.OSVersion.ToString();
         }
+
+        public ActorAppInsightsMonitor(TelemetryClient client)
+        {
+            _client = client;
+        }
+
         public override void UpdateCounter(string metricName, int delta, double sampleRate)
         {
             var properties = new Dictionary<string, string>

@@ -1,3 +1,6 @@
+#### 0.5.2 Apr 06 2015
+Added constructor for AppInsigts monitor to inject new TelemetryClient
+
 #### 0.5.1 Aug 19 2015
 Bugfix release for 0.5.0
 
