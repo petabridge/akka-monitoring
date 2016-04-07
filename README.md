@@ -44,12 +44,14 @@ And then install a specific implementation
 
 Once that's done, programmatically register your monitoring agent with the `ActorMonitoringExtension` object like this:
 
-    using Akka;
-	using Akka.Monitoring;
-	using Akka.Monitoring.StatsD;
+````csharp
+using Akka;
+using Akka.Monitoring;
+using Akka.Monitoring.StatsD;
 
-	_system = ActorSystem.Create("akka-performance-demo");
-    var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_system, new ActorStatsDMonitor());
+_system = ActorSystem.Create("akka-performance-demo");
+var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_system, new ActorStatsDMonitor());
+````
 
 This will automatically register the `AkkaStatsDMonitor` monitoring agent with your `ActorSystem`, and it will be available for use immediately. 
 
@@ -59,44 +61,48 @@ Now that you have your monitor registered, you can begin recording metrics - the
 **Record metrics via the `ActorContext` extension methods**
 You can record all of your metrics directly off of the `Context` object inside each of your actors, like this:
 
-	class HelloActor : TypedActor, IHandle<string>
-	{
-	    protected override void PreStart()
-	    {
-	        Context.IncrementActorCreated();
-	    }
-	
-	    protected override void PostStop()
-	    {
-	        Context.IncrementActorStopped();
-	    }
-	
-	    public void Handle(string message)
-	    {
-	        Context.IncrementMessagesReceived();
-	        Console.WriteLine("Received: {0}", message);
-	        if (message == "Goodbye")
-	        {
-	            Context.Self.Stop();
-	            Program.ManualResetEvent.Set(); //allow the program to exit
-	        }
-	        else
-	            Sender.Tell("Hello!");
-	    }
-	}
+````csharp
+class HelloActor : TypedActor, IHandle<string>
+{
+    protected override void PreStart()
+    {
+        Context.IncrementActorCreated();
+    }
+
+    protected override void PostStop()
+    {
+        Context.IncrementActorStopped();
+    }
+
+    public void Handle(string message)
+    {
+        Context.IncrementMessagesReceived();
+        Console.WriteLine("Received: {0}", message);
+        if (message == "Goodbye")
+        {
+            Context.Self.Stop();
+            Program.ManualResetEvent.Set(); //allow the program to exit
+        }
+        else
+            Sender.Tell("Hello!");
+    }
+}
+````
 
 Alternatively, if you need to be able to record some custom metrics without the `Context` object, you can use the `ActorMonitoringExtension` object directly.
 
 **Record metrics via the `ActorMonitoringExtension` methods**
 
-	using Akka;
-	using Akka.Monitoring;
-	using Akka.Monitoring.StatsD;
+````csharp
+using Akka;
+using Akka.Monitoring;
+using Akka.Monitoring.StatsD;
 
-	_system = ActorSystem.Create("akka-performance-demo");
-    var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_system, new ActorStatsDMonitor());
-	ActorMonitoringExtension.Monitors(_system).IncrementDebugsLogged();
-    Console.WriteLine("Logging debug...");
+_system = ActorSystem.Create("akka-performance-demo");
+var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_system, new ActorStatsDMonitor());
+ActorMonitoringExtension.Monitors(_system).IncrementDebugsLogged();
+Console.WriteLine("Logging debug...");
+````
 
 **Metric capture methods**
 
@@ -132,14 +138,16 @@ An example of perfmon chart displaying metrics from **Akka.Monitoring.Performanc
 
 In order to create custom counters, timing metrics and gauges, you need to provide `CustomMetrics` with metric names  to `ActorPerformanceCountersMonitor` constructor:
 
-    var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_system,
-        new ActorPerformanceCountersMonitor(
-            new CustomMetrics
-            {
-                Counters = { "akka.custom.metric1", "akka.custom.metric2" },
-                Gauges = { "akka.messageboxsize"},
-                Timers = { "akka.handlertime" }
-            }));
+````csharp
+var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_system,
+    new ActorPerformanceCountersMonitor(
+        new CustomMetrics
+        {
+            Counters = { "akka.custom.metric1", "akka.custom.metric2" },
+            Gauges = { "akka.messageboxsize"},
+            Timers = { "akka.handlertime" }
+        }));
+````            
 
 Metric names will become performance counter names, so make sure they are unique among Akka Pefmormance Counters Category.
 
