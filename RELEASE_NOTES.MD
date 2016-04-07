@@ -1,3 +1,6 @@
+#### 0.5.3 Apr 06 2015
+Change UpdateCounter for application insights sink to use TrackMetric instead of TrackEvent
+
 #### 0.5.2 Apr 06 2015
 Added constructor for AppInsigts monitor to inject new TelemetryClient
 

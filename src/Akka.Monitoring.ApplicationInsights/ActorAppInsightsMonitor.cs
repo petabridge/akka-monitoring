@@ -32,11 +32,10 @@ namespace Akka.Monitoring.ApplicationInsights
         {
             var properties = new Dictionary<string, string>
             {
-                { "delta", delta.ToString() },
                 { "sampleRate", sampleRate.ToString() }
             };
            
-            _client.TrackEvent(metricName, properties);
+            _client.TrackMetric(metricName, delta, properties);
         }
 
         public override void UpdateTiming(string metricName, long time, double sampleRate)
