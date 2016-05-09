@@ -1,3 +1,7 @@
+#### 0.6.1 May 09 2016
+
+Updated to Akka 1.0.8
+
 #### 0.5.3 Apr 06 2015
 Change UpdateCounter for application insights sink to use TrackMetric instead of TrackEvent
 
