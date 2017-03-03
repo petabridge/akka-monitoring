@@ -39,6 +39,7 @@ And then install a specific implementation
 
     Install-Package Akka.Monitoring.StatsD
     Install-Package Akka.Monitoring.ApplicationInsights
+    Install-Package Akka.Monitoring.PerformanceCounters
 
 ### Register monitors with your `ActorSystem`
 
@@ -50,7 +51,7 @@ using Akka.Monitoring;
 using Akka.Monitoring.StatsD;
 
 _system = ActorSystem.Create("akka-performance-demo");
-var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_system, new ActorStatsDMonitor());
+var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_system, new ActorStatsDMonitor()); //new ActorAppInsightsMonitor(), new ActorPerformanceCountersMonitor ();
 ````
 
 This will automatically register the `AkkaStatsDMonitor` monitoring agent with your `ActorSystem`, and it will be available for use immediately. 
