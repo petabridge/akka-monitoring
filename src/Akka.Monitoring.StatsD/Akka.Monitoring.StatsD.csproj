@@ -32,13 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="StatsdClient, Version=1.1.26.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StatsdClient.1.1.26\lib\net35\StatsdClient.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="StatsdClient.Configuration, Version=1.1.26.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StatsdClient.1.1.26\lib\net35\StatsdClient.Configuration.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="StatsdClient, Version=2.0.68.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\StatsdClient.2.0.68\lib\net45\StatsdClient.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
