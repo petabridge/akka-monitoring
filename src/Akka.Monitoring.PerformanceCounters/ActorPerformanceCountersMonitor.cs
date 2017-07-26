@@ -8,7 +8,7 @@ namespace Akka.Monitoring.PerformanceCounters
 {
     public class ActorPerformanceCountersMonitor : AbstractActorMonitoringClient
     {
-        internal static string PerformanceCountersCategoryName { get; set; }
+        internal static string PerformanceCountersCategoryName { get; private set; }
 
         private const string TotalCounterInstanceName = "_Total";
         private static readonly Guid MonitorName = new Guid("F651B9F8-AA38-45BD-BFB9-C5595519C23C");
