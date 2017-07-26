@@ -7,7 +7,7 @@ namespace Akka.Monitoring.PerformanceCounters
     {
         readonly ConcurrentDictionary<string, PerformanceCounter> _performanceCounters =
             new ConcurrentDictionary<string, PerformanceCounter>();
-        public AkkaGauge(string name) : base(name)
+        public AkkaGauge(string name, string categoryName) : base(name, categoryName)
         {
         }
 
@@ -27,8 +27,7 @@ namespace Akka.Monitoring.PerformanceCounters
             if (!_performanceCounters.ContainsKey(instanceName))
             {
                 _performanceCounters.TryAdd(instanceName,
-                    new PerformanceCounter(ActorPerformanceCountersMonitor.PerformanceCountersCategoryName, Name, instanceName,
-                        false));
+                    new PerformanceCounter(CategoryName, Name, instanceName, false));
             }
             _performanceCounters[instanceName].RawValue = value;
         }

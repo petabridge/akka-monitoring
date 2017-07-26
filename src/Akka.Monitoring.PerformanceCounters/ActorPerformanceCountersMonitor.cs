@@ -8,8 +8,6 @@ namespace Akka.Monitoring.PerformanceCounters
 {
     public class ActorPerformanceCountersMonitor : AbstractActorMonitoringClient
     {
-        internal static string PerformanceCountersCategoryName { get; private set; }
-
         private const string TotalCounterInstanceName = "_Total";
         private static readonly Guid MonitorName = new Guid("F651B9F8-AA38-45BD-BFB9-C5595519C23C");
         private static readonly HashSet<string> BuiltInCounterNames = new HashSet<string>(new[]
@@ -30,9 +28,11 @@ namespace Akka.Monitoring.PerformanceCounters
         private readonly Dictionary<string, AkkaGauge> _gauges;
         private readonly Dictionary<string, AkkaTimer> _timers;
 
+        private readonly string categoryName;
+
         public ActorPerformanceCountersMonitor(CustomMetrics customMetrics = null, string categoryName = "Akka")
         {
-            PerformanceCountersCategoryName = categoryName;
+            this.categoryName = categoryName;
 
             var counterNames = BuiltInCounterNames;
             var gaugeNames = new HashSet<string>();
@@ -43,9 +43,9 @@ namespace Akka.Monitoring.PerformanceCounters
                 gaugeNames = customMetrics.Gauges;
                 timerNames = customMetrics.Timers;
             }
-            _counters = counterNames.ToDictionary(cn => cn, cn => new AkkaCounter(cn));
-            _gauges = gaugeNames.ToDictionary(cn => cn, cn => new AkkaGauge(cn));
-            _timers = timerNames.ToDictionary(cn => cn, cn => new AkkaTimer(cn));
+            _counters = counterNames.ToDictionary(cn => cn, cn => new AkkaCounter(cn, categoryName));
+            _gauges = gaugeNames.ToDictionary(cn => cn, cn => new AkkaGauge(cn, categoryName));
+            _timers = timerNames.ToDictionary(cn => cn, cn => new AkkaTimer(cn, categoryName));
             Init(_counters.Values.Cast<AkkaMetric>().Concat(_gauges.Values).Concat(_timers.Values));
         }
 
@@ -106,10 +106,10 @@ namespace Akka.Monitoring.PerformanceCounters
                 akkaMetric.RegisterIn(ccdc);
             }            
 
-            if (!PerformanceCounterCategory.Exists(PerformanceCountersCategoryName))
+            if (!PerformanceCounterCategory.Exists(categoryName))
             {
                 //Only create if it doesn't exist.
-                PerformanceCounterCategory.Create(PerformanceCountersCategoryName, "", PerformanceCounterCategoryType.MultiInstance, ccdc);
+                PerformanceCounterCategory.Create(categoryName, "", PerformanceCounterCategoryType.MultiInstance, ccdc);
             }
 
             
