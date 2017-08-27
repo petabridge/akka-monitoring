@@ -8,8 +8,8 @@ namespace Akka.Monitoring.PerformanceCounters
     {
         readonly ConcurrentDictionary<string, Tuple<PerformanceCounter, PerformanceCounter>> _performanceCounters =
             new ConcurrentDictionary<string, Tuple<PerformanceCounter, PerformanceCounter>>();
-        public AkkaCounter(string name)
-            :base(name)
+        public AkkaCounter(string name, string categoryName)
+            : base(name, categoryName)
         {            
         }        
 
@@ -35,10 +35,8 @@ namespace Akka.Monitoring.PerformanceCounters
             if (!_performanceCounters.ContainsKey(instanceName))
             {
                 _performanceCounters.TryAdd(instanceName, Tuple.Create(
-                    new PerformanceCounter(ActorPerformanceCountersMonitor.PerformanceCountersCategoryName, Name,
-                        instanceName, false),
-                    new PerformanceCounter(ActorPerformanceCountersMonitor.PerformanceCountersCategoryName,
-                        RatePerformanceCounterName(Name), instanceName, false)));
+                    new PerformanceCounter(CategoryName, Name, instanceName, false),
+                    new PerformanceCounter(CategoryName, RatePerformanceCounterName(Name), instanceName, false)));
             }
 
             _performanceCounters[instanceName].Item1.IncrementBy(delta);

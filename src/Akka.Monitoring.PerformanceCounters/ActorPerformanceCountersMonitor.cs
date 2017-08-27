@@ -8,9 +8,8 @@ namespace Akka.Monitoring.PerformanceCounters
 {
     public class ActorPerformanceCountersMonitor : AbstractActorMonitoringClient
     {
-        internal const string PerformanceCountersCategoryName = "Akka";
         private const string TotalCounterInstanceName = "_Total";
-        private static readonly Guid MonitorName = new Guid("F651B9F8-AA38-45BD-BFB9-C5595519C23C");        
+        private static readonly Guid MonitorName = new Guid("F651B9F8-AA38-45BD-BFB9-C5595519C23C");
         private static readonly HashSet<string> BuiltInCounterNames = new HashSet<string>(new[]
         {
             CounterNames.ActorRestarts,
@@ -24,34 +23,38 @@ namespace Akka.Monitoring.PerformanceCounters
             CounterNames.WarningMessages,
             CounterNames.ErrorMessages,
         });
-        
+
         private readonly Dictionary<string, AkkaCounter> _counters;
         private readonly Dictionary<string, AkkaGauge> _gauges;
         private readonly Dictionary<string, AkkaTimer> _timers;
 
-        public ActorPerformanceCountersMonitor(CustomMetrics customMetrics =null)
+        private readonly string categoryName;
+
+        public ActorPerformanceCountersMonitor(CustomMetrics customMetrics = null, string categoryName = "Akka")
         {
+            this.categoryName = categoryName;
+
             var counterNames = BuiltInCounterNames;
             var gaugeNames = new HashSet<string>();
             var timerNames = new HashSet<string>();
             if (customMetrics != null)
             {
-                counterNames = new HashSet<string>(counterNames.Concat(customMetrics.Counters));                
+                counterNames = new HashSet<string>(counterNames.Concat(customMetrics.Counters));
                 gaugeNames = customMetrics.Gauges;
                 timerNames = customMetrics.Timers;
             }
-            _counters = counterNames.ToDictionary(cn => cn, cn=>new AkkaCounter(cn));
-            _gauges = gaugeNames.ToDictionary(cn => cn, cn=>new AkkaGauge(cn));
-            _timers = timerNames.ToDictionary(cn => cn, cn => new AkkaTimer(cn));
+            _counters = counterNames.ToDictionary(cn => cn, cn => new AkkaCounter(cn, categoryName));
+            _gauges = gaugeNames.ToDictionary(cn => cn, cn => new AkkaGauge(cn, categoryName));
+            _timers = timerNames.ToDictionary(cn => cn, cn => new AkkaTimer(cn, categoryName));
             Init(_counters.Values.Cast<AkkaMetric>().Concat(_gauges.Values).Concat(_timers.Values));
         }
 
         public override void UpdateCounter(string metricName, int delta, double sampleRate)
-        {                      
-            var resolution = ResolveMetricInstance(metricName,_counters);
+        {
+            var resolution = ResolveMetricInstance(metricName, _counters);
             if (resolution != null)
             {
-                resolution.Item1.Update(resolution.Item2,delta);
+                resolution.Item1.Update(resolution.Item2, delta);
             }
             else
             {
@@ -103,10 +106,10 @@ namespace Akka.Monitoring.PerformanceCounters
                 akkaMetric.RegisterIn(ccdc);
             }            
 
-            if (!PerformanceCounterCategory.Exists(PerformanceCountersCategoryName))
+            if (!PerformanceCounterCategory.Exists(categoryName))
             {
                 //Only create if it doesn't exist.
-                PerformanceCounterCategory.Create(PerformanceCountersCategoryName, "", PerformanceCounterCategoryType.MultiInstance, ccdc);
+                PerformanceCounterCategory.Create(categoryName, "", PerformanceCounterCategoryType.MultiInstance, ccdc);
             }
 
             
