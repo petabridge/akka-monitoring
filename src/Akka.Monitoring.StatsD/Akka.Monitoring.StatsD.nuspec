@@ -8,7 +8,7 @@
     <owners>@authors@</owners>
     <licenseUrl>https://github.com/Aaronontheweb/akka-monitoring/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/Aaronontheweb/akka-monitoring</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/akkadotnet/akka.net/gh-pages/images/icon-32x32.png</iconUrl>
+    <iconUrl>http://getakka.net/images/AkkaNetLogo.Normal.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>@description@</description>
     <releaseNotes>@releaseNotes@</releaseNotes>

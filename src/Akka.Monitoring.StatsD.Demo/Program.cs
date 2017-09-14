@@ -32,7 +32,7 @@ namespace Akka.Monitoring.StatsD.Demo
         }
     }
 
-    class GoodbyeActor : TypedActor, IHandle<Tuple<IActorRef,string>>, IHandle<string>
+    class GoodbyeActor : TypedActor, IHandle<Tuple<IActorRef, string>>, IHandle<string>
     {
         protected override void PreStart()
         {
@@ -94,7 +94,7 @@ namespace Akka.Monitoring.StatsD.Demo
             while (ManualResetEvent.WaitOne())
             {
                 Console.WriteLine("Shutting down...");
-                _system.Shutdown();
+                _system.Terminate().Wait();
                 Console.WriteLine("Shutdown complete");
                 Console.WriteLine("Press any key to exit");
                 Console.ReadKey();

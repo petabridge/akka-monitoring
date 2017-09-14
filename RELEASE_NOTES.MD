@@ -1,3 +1,8 @@
+#### 0.7.0 September 13 2017
+* Upgraded to Akka.NET v1.3.1.
+* [PerformanceCountersCategoryName made settable](https://github.com/petabridge/akka-monitoring/pull/35) 
+
+
 #### 0.6.1 May 09 2016
 
 Updated to Akka 1.0.8
