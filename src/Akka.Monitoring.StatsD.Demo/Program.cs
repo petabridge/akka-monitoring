@@ -4,7 +4,7 @@ using Akka.Actor;
 
 namespace Akka.Monitoring.StatsD.Demo
 {
-    class HelloActor : TypedActor, IHandle<string>
+    class HelloActor : UntypedActor
     {
         protected override void PreStart()
         {
@@ -30,9 +30,19 @@ namespace Akka.Monitoring.StatsD.Demo
             else
                 Sender.Tell("Hello!");
         }
+
+        protected override void OnReceive(object message)
+        {
+            switch (message)
+            {
+                case string str:
+                    Handle(str);
+                    break;
+            }
+        }
     }
 
-    class GoodbyeActor : TypedActor, IHandle<Tuple<IActorRef,string>>, IHandle<string>
+    class GoodbyeActor : UntypedActor
     {
         protected override void PreStart()
         {
@@ -58,6 +68,19 @@ namespace Akka.Monitoring.StatsD.Demo
         {
             Context.IncrementMessagesReceived();
             message.Item1.Tell("Starting");
+        }
+
+        protected override void OnReceive(object message)
+        {
+            switch (message)
+            {
+                case string str:
+                    Handle(str);
+                    break;
+                case Tuple<IActorRef, string> tup:
+                    Handle(tup);
+                    break;
+            }
         }
     }
 
@@ -94,7 +117,7 @@ namespace Akka.Monitoring.StatsD.Demo
             while (ManualResetEvent.WaitOne())
             {
                 Console.WriteLine("Shutting down...");
-                _system.Shutdown();
+                _system.Terminate().Wait();
                 Console.WriteLine("Shutdown complete");
                 Console.WriteLine("Press any key to exit");
                 Console.ReadKey();

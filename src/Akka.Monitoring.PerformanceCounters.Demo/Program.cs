@@ -140,7 +140,7 @@ namespace Akka.Monitoring.PerformanceCounters.Demo
             while (ManualResetEvent.WaitOne())
             {
                 Console.WriteLine("Shutting down...");
-                _system.Shutdown();
+                _system.Terminate().Wait();
                 Console.WriteLine("Shutdown complete");
                 Console.WriteLine("Press any key to exit");
                 Console.ReadKey();
