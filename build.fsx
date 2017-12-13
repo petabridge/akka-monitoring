@@ -27,7 +27,7 @@ let assertExitCodeZero x = if x = 0 then () else failwithf "Command failed with 
 let release =
     File.ReadLines "RELEASE_NOTES.md"
     |> ReleaseNotesHelper.parseReleaseNotes
-let releaseNotes = String.Join("\n", release.Notes)
+
 //--------------------------------------------------------------------------------
 // Directories
 
@@ -51,9 +51,7 @@ Target "Restore" (fun _ ->
 // Build the solution
 
 Target "Build" (fun _ ->
-    // TODO: Pass Release notes to msbuild
-    //let arguments = String.Format("msbuild {0} /p:Configuration={1} /p:Version={2} /p:GeneratePackages=True /p:ReleaseNotes={3}", sln, configuration, release.NugetVersion, releaseNotes)
-    let arguments = String.Format("msbuild {0} /p:Configuration={1} /p:Version={2} /p:GeneratePackages=True", sln, configuration, release.NugetVersion)
+    let arguments = String.Format(@"msbuild {0} /p:Configuration={1} /p:Version={2} /p:GeneratePackages=True /p:ReleaseNotes=""{3}""", sln, configuration, release.NugetVersion, String.Join("\n", release.Notes))
     Shell.Exec("dotnet", arguments) |> assertExitCodeZero
 )
 
