@@ -4,7 +4,7 @@ using Akka.Actor;
 
 namespace Akka.Monitoring.StatsD.Demo
 {
-    class HelloActor : TypedActor, IHandle<string>
+    class HelloActor : ReceiveActor, IHandle<string>
     {
         protected override void PreStart()
         {
@@ -32,14 +32,14 @@ namespace Akka.Monitoring.StatsD.Demo
         }
     }
 
-    class GoodbyeActor : TypedActor, IHandle<Tuple<IActorRef, string>>, IHandle<string>
+    class GoodbyeActor : ReceiveActor, IHandle<Tuple<IActorRef, string>>, IHandle<string>
     {
         protected override void PreStart()
         {
             Context.IncrementActorCreated();
             base.PreStart();
         }
-
+    
         protected override void PostStop()
         {
             Context.IncrementActorStopped();

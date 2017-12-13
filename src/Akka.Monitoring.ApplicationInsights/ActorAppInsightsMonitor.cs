@@ -20,8 +20,13 @@ namespace Akka.Monitoring.ApplicationInsights
             {
                 InstrumentationKey = instrumentationKey
             };
+
+#if NET45
             _client.Context.Device.OperatingSystem = Environment.OSVersion.ToString();
-        }
+#else
+            _client.Context.Device.OperatingSystem = System.Runtime.InteropServices.RuntimeInformation.OSDescription;
+#endif
+    }
 
         public ActorAppInsightsMonitor(TelemetryClient client)
         {

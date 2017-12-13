@@ -1,3 +1,11 @@
+#### 0.8.0 December 13 2017
+* Upgraded .csproj to VS2017 format
+* Upgraded libraries to support .NetStandard1.6 (Except PerformanceCounters. see https://github.com/dotnet/corefx/issues/3906)
+* Upgraded to Akka.NET v1.3.2.
+* Upgraded to Microsoft.ApplicationInsights v2.4.0.
+* Upgraded to Newtonsoft.Json v10.0.3.
+* Upgraded to StatsDClient v3.0.86.
+
 #### 0.7.0 September 13 2017
 * Upgraded to Akka.NET v1.3.1.
 * [PerformanceCountersCategoryName made settable](https://github.com/petabridge/akka-monitoring/pull/35) 

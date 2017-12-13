@@ -33,7 +33,7 @@ namespace Akka.Monitoring.PerformanceCounters.Demo
         }
     }
 
-    class HelloActor : TypedActor, IHandle<string>
+    class HelloActor : ReceiveActor, IHandle<string>
     {
         protected override void PreStart()
         {
@@ -61,7 +61,7 @@ namespace Akka.Monitoring.PerformanceCounters.Demo
         }
     }
 
-    class GoodbyeActor : TypedActor, IHandle<Tuple<IActorRef, string>>, IHandle<string>
+    class GoodbyeActor : ReceiveActor, IHandle<Tuple<IActorRef, string>>, IHandle<string>
     {
         protected override void PreStart()
         {
