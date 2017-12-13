@@ -4,7 +4,6 @@
 open System
 open System.IO
 
-open Fake.TaskRunnerHelper
 open Fake
 open Fake.FileUtils
 
@@ -14,28 +13,26 @@ cd __SOURCE_DIRECTORY__
 // Information about the project for Nuget and Assembly info files
 //--------------------------------------------------------------------------------
 
-let product = "Akka.NET Monitoring"
-let authors = [ "Aaron Stannard" ]
-let copyright = "Copyright © Aaron Stannard 2013-2015"
-let company = "Akka.net"
-let description = "Pluggable monitoring system extension for Akka.NET actor systems"
-let tags = ["akka";"actors";"actor";"model";"Akka";"concurrency";"monitoring";"statsd";]
+let sln = "AkkaMonitoring.sln"
 let configuration = "Release"
+let nugetProjects = [
+  "Akka.Monitoring"
+  "Akka.Monitoring.StatsD"
+  "Akka.Monitoring.ApplicationInsights"
+  "Akka.Monitoring.PerformanceCounters"
+]
+let assertExitCodeZero x = if x = 0 then () else failwithf "Command failed with exit code %i" x
 
 // Read release notes and version
-
 let release =
     File.ReadLines "RELEASE_NOTES.md"
     |> ReleaseNotesHelper.parseReleaseNotes
-
+let releaseNotes = String.Join("\n", release.Notes)
 //--------------------------------------------------------------------------------
 // Directories
 
 let binDir = "bin"
-let testOutput = "TestResults"
-
 let nugetDir = binDir @@ "nuget"
-let workingDir = binDir @@ "build"
 let nugetExe = FullName @".nuget\NuGet.exe"
 
 //--------------------------------------------------------------------------------
@@ -45,31 +42,19 @@ Target "Clean" (fun _ ->
     CleanDir binDir
 )
 
-Target "Restore" RestorePackages
-
-//--------------------------------------------------------------------------------
-// Generate AssemblyInfo files with the version for release notes 
-
-
-open AssemblyInfoFile
-
-Target "AssemblyInfo" (fun _ ->
-    let version = release.AssemblyVersion + ".0"
-
-    CreateCSharpAssemblyInfoWithConfig "src/SharedAssemblyInfo.cs" [
-        Attribute.Company "Akka"
-        Attribute.Copyright copyright
-        Attribute.Version version
-        Attribute.FileVersion version ] <| AssemblyInfoFileConfig(false)
+Target "Restore" (fun _ ->
+    let arguments = String.Format("restore {0} --force", sln)
+    Shell.Exec("dotnet", arguments) |> assertExitCodeZero
 )
 
 //--------------------------------------------------------------------------------
 // Build the solution
 
 Target "Build" (fun _ ->
-    !!"AkkaMonitoring.sln"
-    |> MSBuildRelease "" "Rebuild"
-    |> ignore
+    // TODO: Pass Release notes to msbuild
+    //let arguments = String.Format("msbuild {0} /p:Configuration={1} /p:Version={2} /p:GeneratePackages=True /p:ReleaseNotes={3}", sln, configuration, release.NugetVersion, releaseNotes)
+    let arguments = String.Format("msbuild {0} /p:Configuration={1} /p:Version={2} /p:GeneratePackages=True", sln, configuration, release.NugetVersion)
+    Shell.Exec("dotnet", arguments) |> assertExitCodeZero
 )
 
 //--------------------------------------------------------------------------------
@@ -81,31 +66,11 @@ Target "CopyOutput" (fun _ ->
         let src = "src" @@ project @@ @"bin\release\"
         let dst = binDir @@ project
         CopyDir dst src allFiles
-    [ "Akka.Monitoring"
-      "Akka.Monitoring.StatsD"]
+    nugetProjects
     |> List.iter copyOutput
 )
 
 Target "BuildRelease" DoNothing
-
-//--------------------------------------------------------------------------------
-// Nuget targets 
-//--------------------------------------------------------------------------------
-
-module Nuget = 
-    // add Akka dependency for other projects
-    let getAkkaDependency project =
-        match project with
-        | "Akka.Monitoring" -> []
-        | _ -> ["Akka.Monitoring", release.NugetVersion]
-
-    // selected nuget description
-    let description project =
-        match project with
-        | "Akka.Monitoring.StatsD" -> "StatsD client for Akka.NET Monitoring"
-        | _ -> description
-
-open Nuget
 
 //--------------------------------------------------------------------------------
 // Clean nuget directory
@@ -117,84 +82,6 @@ Target "CleanNuget" (fun _ ->
 //--------------------------------------------------------------------------------
 // Pack nuget for all projects
 // Publish to nuget.org if nugetkey is specified
-
-let createNugetPackages _ =
-    let mutable dirName = 1
-    let removeDir dir = 
-        let del _ = 
-            DeleteDir dir
-            not (directoryExists dir)
-        runWithRetries del 3 |> ignore
-
-    let getDirName workingDir dirCount =
-        workingDir + dirCount.ToString()
-
-    CleanDir workingDir
-
-    ensureDirectory nugetDir
-    for nuspec in !! "src/**/*.nuspec" do
-        let ourWorkingDir = getDirName workingDir dirName
-
-        printfn "Creating nuget packages for %s" nuspec
-        
-        ensureDirectory ourWorkingDir
-
-        let project = Path.GetFileNameWithoutExtension nuspec 
-        let projectDir = Path.GetDirectoryName nuspec
-        let projectFile = (!! (projectDir @@ project + ".*sproj")) |> Seq.head
-        let releaseDir = projectDir @@ @"bin\Release"
-        let packages = projectDir @@ "packages.config"        
-        let packageDependencies = if (fileExists packages) then (getDependencies packages) else []
-        let dependencies = packageDependencies @ getAkkaDependency project
-        let releaseVersion = release.NugetVersion
-        let desc = description project
-
-        let pack outputDir  =
-            NuGetHelper.NuGet
-                (fun p ->
-                    { p with
-                        Description = desc
-                        Authors = authors
-                        Copyright = copyright
-                        Project =  project
-                        Properties = ["Configuration", "Release"]
-                        ReleaseNotes = release.Notes |> String.concat "\n"
-                        Version = releaseVersion
-                        Tags = tags |> String.concat " "
-                        OutputPath = outputDir
-                        WorkingDir = ourWorkingDir
-                        Dependencies = dependencies })
-                nuspec
-
-        // Copy dll, pdb and xml to libdir = workingDir/lib/net45/
-        let libDir = ourWorkingDir @@ @"lib\net45\"
-        ensureDirectory libDir
-        !! (releaseDir @@ project + ".dll")
-        ++ (releaseDir @@ project + ".pdb")
-        ++ (releaseDir @@ project + ".xml")
-        ++ (releaseDir @@ project + ".ExternalAnnotations.xml")
-        |> CopyFiles libDir
-
-        // Copy all src-files (.cs and .fs files) to workingDir/src
-        let nugetSrcDir = ourWorkingDir @@ @"src/"
-        // CreateDir nugetSrcDir
-
-        let isCs = hasExt ".cs"
-        let isFs = hasExt ".fs"
-        let isAssemblyInfo f = (filename f).Contains("AssemblyInfo")
-        let isSrc f = (isCs f || isFs f) && not (isAssemblyInfo f) 
-        CopyDir nugetSrcDir projectDir isSrc
-        
-        //Remove workingDir/src/obj and workingDir/src/bin
-        removeDir (nugetSrcDir @@ "obj")
-        removeDir (nugetSrcDir @@ "bin")
-
-        // Create both normal nuget package and symbols nuget package. 
-        // Uses the files we copied to workingDir and outputs to nugetdir
-        pack nugetDir
-        
-        //removeDir workingDir
-        dirName <- dirName + 1
 
 let publishNugetPackages _ = 
     let rec publishPackage url accessKey trialsLeft packageFile =
@@ -229,11 +116,7 @@ let publishNugetPackages _ =
 
 
 Target "Nuget" <| fun _ -> 
-    createNugetPackages()
     publishNugetPackages()
-
-Target "CreateNuget" <| fun _ -> 
-    createNugetPackages()
 
 Target "PublishNuget" <| fun _ -> 
     publishNugetPackages()
@@ -244,7 +127,7 @@ Target "PublishNuget" <| fun _ ->
 Target "All" DoNothing
 
 // build dependencies
-"Clean" ==> "Restore" ==> "AssemblyInfo" ==> "Build" ==> "CopyOutput" ==> "BuildRelease"
+"Clean" ==> "Restore" ==> "Build" ==> "CopyOutput" ==> "BuildRelease"
 
 // nuget dependencies
 "CleanNuget" ==> "BuildRelease" ==> "Nuget"
@@ -253,4 +136,4 @@ Target "All" DoNothing
 "BuildRelease" ==> "All"
 "Nuget" ==> "All"
 
-RunTargetOrDefault "NuGet"
+RunTargetOrDefault "BuildRelease"
