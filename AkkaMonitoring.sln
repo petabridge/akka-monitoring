@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Akka.Monitoring.StatsD", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Akka.Monitoring.StatsD.Demo", "src\Akka.Monitoring.StatsD.Demo\Akka.Monitoring.StatsD.Demo.csproj", "{9AA04DC5-796E-4645-B65C-4271DDFD9098}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{35EFD718-7428-468A-959B-8A12F9AB3DAA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{35EFD718-7428-468A-959B-8A12F9AB3DAA}"
 	ProjectSection(SolutionItems) = preProject
 		build.fsx = build.fsx
 	EndProjectSection

@@ -4,7 +4,7 @@ using Akka.Actor;
 
 namespace Akka.Monitoring.StatsD.Demo
 {
-    class HelloActor : ReceiveActor, IHandle<string>
+    class HelloActor : TypedActor, IHandle<string>
     {
         protected override void PreStart()
         {
@@ -32,7 +32,7 @@ namespace Akka.Monitoring.StatsD.Demo
         }
     }
 
-    class GoodbyeActor : ReceiveActor, IHandle<Tuple<IActorRef, string>>, IHandle<string>
+    class GoodbyeActor : TypedActor, IHandle<Tuple<IActorRef, string>>, IHandle<string>
     {
         protected override void PreStart()
         {
