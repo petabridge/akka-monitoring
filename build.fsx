@@ -43,7 +43,7 @@ Target "Clean" (fun _ ->
 )
 
 Target "Restore" (fun _ ->
-    let arguments = String.Format("restore {0} --force", sln)
+    let arguments = String.Format("restore {0}", sln)
     Shell.Exec("dotnet", arguments) |> assertExitCodeZero
 )
 
