@@ -62,6 +62,20 @@ namespace Akka.Monitoring.PerformanceCounters
             }
         }
 
+        public virtual void ResetCounterTotal(string metricName)
+        {
+            var resolution = ResolveMetricInstance(metricName, _counters);
+            resolution?.Item1.ResetTotal(resolution.Item2);
+        }
+
+        public virtual void ResetAllCounterTotals()
+        {
+            foreach (var akkaCounterKvp in _counters)
+            {
+                akkaCounterKvp.Value.ResetTotal(TotalCounterInstanceName);
+            }
+        }
+
         public override void UpdateGauge(string metricName, int value, double sampleRate)
         {
             var resolution = ResolveMetricInstance(metricName, _gauges);
