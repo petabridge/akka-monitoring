@@ -11,8 +11,8 @@ namespace Akka.Monitoring.PerformanceCounters
         public AkkaCounter(string name, string categoryName)
             : base(name, categoryName)
         {            
-        }        
-
+        }
+        
         public override void RegisterIn(CounterCreationDataCollection collection)
         {
             var numberOfItems = new CounterCreationData
@@ -41,6 +41,18 @@ namespace Akka.Monitoring.PerformanceCounters
 
             _performanceCounters[instanceName].Item1.IncrementBy(delta);
             _performanceCounters[instanceName].Item2.IncrementBy(delta);
+        }
+
+        public void ResetTotal(string instanceName)
+        {
+            if (!_performanceCounters.ContainsKey(instanceName))
+            {
+                _performanceCounters.TryAdd(instanceName, Tuple.Create(
+                    new PerformanceCounter(CategoryName, Name, instanceName, false),
+                    new PerformanceCounter(CategoryName, RatePerformanceCounterName(Name), instanceName, false)));
+            }
+
+            _performanceCounters[instanceName].Item1.RawValue = 0;
         }
 
         private static string RatePerformanceCounterName(string counterName)
