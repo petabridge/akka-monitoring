@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net45</TargetFrameworks>
     <Description>Windows Performance counters for Akka.NET actor systems</Description>
-    <Company>Petabridge</Company>
   </PropertyGroup>
 
   <ItemGroup>
