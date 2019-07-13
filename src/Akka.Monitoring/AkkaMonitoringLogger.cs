@@ -8,11 +8,37 @@ namespace Akka.Monitoring
     /// Logging implementation used to report key events, such as <see cref="DeadLetter"/> and <see cref="UnhandledMessage"/> instances
     /// back to an appropriate monitoring service
     /// </summary>
-    public class AkkaMonitoringLogger : TypedActor,
-        IHandle<DeadLetter>, IHandle<UnhandledMessage>,
-        IHandle<LogEvent>
+    public class AkkaMonitoringLogger : ActorBase
     {
         public const string LoggerName = "AkkaMonitoringLogger";
+
+        private readonly ActorMonitor _monitor = ActorMonitoringExtension.Monitors(Context.System);
+
+        protected override bool Receive(object message)
+        {
+            switch (message)
+            {
+                case Debug _:
+                    _monitor.IncrementDebugsLogged();
+                    return true;
+                case Error _:
+                    _monitor.IncrementErrorsLogged();
+                    return true;
+                case Warning _:
+                    _monitor.IncrementWarningsLogged();
+                    return true;
+                case Info _:
+                    _monitor.IncrementInfosLogged();
+                    return true;
+                case DeadLetter _:
+                    _monitor.IncrementDeadLetters();
+                    return true;
+                case UnhandledMessage _:
+                    _monitor.IncrementUnhandledMessage();
+                    return true;
+                default: return false;
+            }
+        }
 
         protected override void PreStart()
         {
@@ -44,28 +70,7 @@ namespace Akka.Monitoring
 
         protected override void PostStop()
         {
-            ActorMonitoringExtension.Monitors(Context.System).IncrementActorStopped(Context);
-        }
-
-        public void Handle(DeadLetter message)
-        {
-            ActorMonitoringExtension.Monitors(Context.System).IncrementDeadLetters();
-        }
-
-        public void Handle(UnhandledMessage message)
-        {
-            ActorMonitoringExtension.Monitors(Context.System).IncrementUnhandledMessage();
-        }
-
-        public void Handle(LogEvent message)
-        {
-            var monitor = ActorMonitoringExtension.Monitors(Context.System);
-            message.Match()
-                .With<Debug>(d => monitor.IncrementDebugsLogged())
-                .With<Error>(e => monitor.IncrementErrorsLogged())
-                .With<Warning>(w => monitor.IncrementWarningsLogged())
-                .With<Info>(i => monitor.IncrementInfosLogged())
-                .Default(d => monitor.IncrementUnhandledMessage());
+            _monitor.IncrementActorStopped(Context);
         }
     }
 }

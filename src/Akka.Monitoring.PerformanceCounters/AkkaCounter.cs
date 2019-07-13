@@ -55,9 +55,6 @@ namespace Akka.Monitoring.PerformanceCounters
             _performanceCounters[instanceName].Item1.RawValue = 0;
         }
 
-        private static string RatePerformanceCounterName(string counterName)
-        {
-            return string.Format("{0} /sec", counterName);
-        }
+        private static string RatePerformanceCounterName(string counterName) => $"{counterName} /sec";
     }
 }
