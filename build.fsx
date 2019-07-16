@@ -23,10 +23,9 @@ let tags = ["akka";"actors";"actor";"model";"Akka";"concurrency";"monitoring";"s
 let configuration = "Release"
 
 // Read release notes and version
-let solutionFile = FindFirstMatchingFile "*.sln" __SOURCE_DIRECTORY__  // dynamically look up the solution
-
+    
 let release =
-    File.ReadLines "RELEASE_NOTES.md"
+    File.ReadLines "./RELEASE_NOTES.md"
     |> ReleaseNotesHelper.parseReleaseNotes
 
 //--------------------------------------------------------------------------------
