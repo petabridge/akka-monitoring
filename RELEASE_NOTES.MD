@@ -1,4 +1,5 @@
 #### 0.7.0 September 13 2017
+
 * Upgraded to Akka.NET v1.3.1.
 * [PerformanceCountersCategoryName made settable](https://github.com/petabridge/akka-monitoring/pull/35) 
 
@@ -28,7 +29,6 @@ To install that package, just type
 
 #### 0.4.0 Apr 10 2015
 * Added support for Azure Application Insights
-
 To install that package, just type
 
     PM> Install-package Akka.Monitoring.ApplicationInsights
