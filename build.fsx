@@ -78,7 +78,7 @@ Target "Build" (fun _ ->
 
 Target "CopyOutput" (fun _ ->    
     let copyOutput project =
-        let src = "src" @@ project @@ @"bin\release\"
+        let src = "src" @@ project @@ @"bin/Release/"
         let dst = binDir @@ project
         CopyDir dst src allFiles
     [ "Akka.Monitoring"
@@ -142,7 +142,7 @@ let createNugetPackages _ =
         let project = Path.GetFileNameWithoutExtension nuspec 
         let projectDir = Path.GetDirectoryName nuspec
         let projectFile = (!! (projectDir @@ project + ".*sproj")) |> Seq.head
-        let releaseDir = projectDir @@ @"bin\Release"
+        let releaseDir = projectDir @@ @"bin/Release"
         let packages = projectDir @@ "packages.config"        
         let packageDependencies = if (fileExists packages) then (getDependencies packages) else []
         let dependencies = packageDependencies @ getAkkaDependency project
