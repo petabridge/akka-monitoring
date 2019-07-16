@@ -10,12 +10,22 @@ open Fake.DotNetCli
 open Fake.DocFxHelper
 
 // Information about the project for Nuget and Assembly info files
-let product = "Akka.Persistence.Extras"
+let product = "Akka.NET Monitoring"
+let authors = [ "Aaron Stannard" ]
+let copyright = "Copyright © Aaron Stannard 2013-2015"
+let company = "Akka.net"
+let description = "Pluggable monitoring system extension for Akka.NET actor systems"
+let tags = ["akka";"actors";"actor";"model";"Akka";"concurrency";"monitoring";"statsd";]
 let configuration = "Release"
 
+// Read release notes and version
+let release =
+    File.ReadLines "RELEASE_NOTES.md"
+    |> ReleaseNotesHelper.parseReleaseNotes
+
 // Metadata used when signing packages and DLLs
-let signingName = "Akka.Persistence.Extras"
-let signingDescription = "Akka.Persistence.Extras library for use with Akka.NET."
+let signingName = "Akka.Monitoring"
+let signingDescription = ""
 let signingUrl = "https://devops.petabridge.com/"
 
 // Read release notes and version
