@@ -78,7 +78,7 @@ Target "Build" (fun _ ->
 
 Target "CopyOutput" (fun _ ->    
     let copyOutput project =
-        let src = "src" @@ project @@ @"bin\release\"
+        let src = "src" @@ project @@ @"bin/release/"
         let dst = binDir @@ project
         CopyDir dst src allFiles
     [ "Akka.Monitoring"
