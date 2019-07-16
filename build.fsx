@@ -49,9 +49,16 @@ Target "Clean" (fun _ ->
     CleanDir "docs/_site"
 )
 
+open AssemblyInfoFile
+
 Target "AssemblyInfo" (fun _ ->
-    XmlPokeInnerText "./src/common.props" "//Project/PropertyGroup/VersionPrefix" releaseNotes.AssemblyVersion    
-    XmlPokeInnerText "./src/common.props" "//Project/PropertyGroup/PackageReleaseNotes" (releaseNotes.Notes |> String.concat "\n")
+    let version = release.AssemblyVersion + ".0"
+
+    CreateCSharpAssemblyInfoWithConfig "src/SharedAssemblyInfo.cs" [
+        Attribute.Company "Akka"
+        Attribute.Copyright copyright
+        Attribute.Version version
+        Attribute.FileVersion version ] <| AssemblyInfoFileConfig(false)
 )
 
 Target "Build" (fun _ ->          
