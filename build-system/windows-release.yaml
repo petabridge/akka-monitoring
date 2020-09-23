@@ -1,0 +1,46 @@
+# Release task for PbLib projects
+# See https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema for reference
+
+pool:
+  vmImage: vs2017-win2016
+  demands: Cmd
+
+trigger:
+  branches:
+    include:
+      - refs/tags/*
+pr: none
+
+variables:
+  - group: Signing Keys
+  - group: NuGet Keys
+  - name: githubConnectionName
+    value: Releases
+  - name: projectName
+    value: Akka.Monitoring 
+  - name: githubRepositoryName
+    value: petabridge/akka-monitoring
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk'
+  inputs:
+    packageType: sdk
+    version: 2.1.22 #needed for SignTool
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- task: BatchScript@1
+  displayName: 'FAKE Build'
+  inputs:
+    filename: build.cmd
+    arguments: 'nuget SignClientUser=$(signingUsername) SignClientSecret=$(signingPassword) nugetpublishurl=https://www.nuget.org/api/v2/package nugetkey=$(Akka.NET Tools NuGet)'
+
+- task: GitHubRelease@0
+  displayName: 'GitHub release (create)'
+  inputs:
+    gitHubConnection: $(githubConnectionName)
+    repositoryName: $(githubRepositoryName)
+    title: '$(projectName) v$(Build.SourceBranchName)'
+    releaseNotesFile: 'RELEASE_NOTES.md'
+    assets: |
+     bin\nuget\*.nupkg

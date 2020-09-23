@@ -52,46 +52,36 @@ namespace Akka.Monitoring.PerformanceCounters
         public override void UpdateCounter(string metricName, int delta, double sampleRate)
         {
             var resolution = ResolveMetricInstance(metricName, _counters);
-            if (resolution != null)
+            resolution?.Item1.Update(resolution.Item2, delta);
+        }
+
+        public virtual void ResetCounterTotal(string metricName)
+        {
+            var resolution = ResolveMetricInstance(metricName, _counters);
+            resolution?.Item1.ResetTotal(resolution.Item2);
+        }
+
+        public virtual void ResetAllCounterTotals()
+        {
+            foreach (var akkaCounterKvp in _counters)
             {
-                resolution.Item1.Update(resolution.Item2, delta);
-            }
-            else
-            {
-                //unkown metric name
+                akkaCounterKvp.Value.ResetTotal(TotalCounterInstanceName);
             }
         }
 
         public override void UpdateGauge(string metricName, int value, double sampleRate)
         {
             var resolution = ResolveMetricInstance(metricName, _gauges);
-            if (resolution != null)
-            {
-                resolution.Item1.Update(resolution.Item2, value);
-            }
-            else
-            {
-                //unkown metric name
-            }
+            resolution?.Item1.Update(resolution.Item2, value);
         }
 
         public override void UpdateTiming(string metricName, long time, double sampleRate)
         {
             var resolution = ResolveMetricInstance(metricName, _timers);
-            if (resolution != null)
-            {
-                resolution.Item1.Update(resolution.Item2, time);
-            }
-            else
-            {
-                //unkown metric name
-            }
+            resolution?.Item1.Update(resolution.Item2, time);
         }
 
-        public override int MonitoringClientId
-        {
-            get { return MonitorName.GetHashCode(); }
-        }
+        public override int MonitoringClientId => MonitorName.GetHashCode();
 
         public override void DisposeInternal()
         {            

@@ -19,6 +19,7 @@ namespace Akka.Monitoring.PerformanceCounters.Demo
                 Console.WriteLine("work done");
                 Context.Gauge("akka.messageboxsize", ((ActorCell)Context).NumberOfMessages);
                 Context.IncrementCounter("akka.custom.metric1");
+                Context.IncrementCounter("akka.custom.metric3");
                 Context.IncrementMessagesReceived();
 
                 stopwatch.Stop();    
@@ -33,8 +34,28 @@ namespace Akka.Monitoring.PerformanceCounters.Demo
         }
     }
 
-    class HelloActor : TypedActor, IHandle<string>
+    class HelloActor : ActorBase
     {
+        protected override bool Receive(object msg)
+        {
+            if (msg is string message)
+            {
+                Context.IncrementMessagesReceived();
+                Console.WriteLine("Received: {0}", message);
+                if (message == "Goodbye")
+                {
+                    Context.Self.Tell(PoisonPill.Instance);
+                    Program.ManualResetEvent.Set(); //allow the program to exit
+                }
+                else
+                    Sender.Tell("Hello!");
+
+                return true;
+            }
+
+            return false;
+        }
+
         protected override void PreStart()
         {
             Context.IncrementActorCreated();
@@ -46,23 +67,16 @@ namespace Akka.Monitoring.PerformanceCounters.Demo
             Context.IncrementActorStopped();
             base.PostStop();
         }
-
-        public void Handle(string message)
-        {
-            Context.IncrementMessagesReceived();
-            Console.WriteLine("Received: {0}", message);
-            if (message == "Goodbye")
-            {
-                Context.Self.Tell(PoisonPill.Instance);
-                Program.ManualResetEvent.Set(); //allow the program to exit
-            }
-            else
-                Sender.Tell("Hello!");
-        }
     }
 
-    class GoodbyeActor : TypedActor, IHandle<Tuple<IActorRef, string>>, IHandle<string>
+    class GoodbyeActor : ReceiveActor
     {
+        public GoodbyeActor()
+        {
+            Receive<string>(Handle);
+            Receive<Tuple<IActorRef, string>>(Handle);
+        }
+
         protected override void PreStart()
         {
             Context.IncrementActorCreated();
@@ -101,14 +115,18 @@ namespace Akka.Monitoring.PerformanceCounters.Demo
         {
 
             _system = ActorSystem.Create("akka-performance-demo");
+            var actorPerformanceCountersMonitor = new ActorPerformanceCountersMonitor(
+                new CustomMetrics
+                {
+                    Counters = { "akka.custom.metric1", "akka.custom.metric2", "akka.custom.metric3" },
+                    Gauges = { "akka.messageboxsize"},
+                    Timers = { "akka.handlertime" }
+                });
+
             var registeredMonitor = ActorMonitoringExtension.RegisterMonitor(_system,
-                new ActorPerformanceCountersMonitor(
-                    new CustomMetrics
-                    {
-                        Counters = { "akka.custom.metric1", "akka.custom.metric2" },
-                        Gauges = { "akka.messageboxsize"},
-                        Timers = { "akka.handlertime" }
-                    }));
+                actorPerformanceCountersMonitor);
+
+            actorPerformanceCountersMonitor.ResetCounterTotal("akka.custom.metric3");
 
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Starting up actor system...");

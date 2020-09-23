@@ -1,0 +1,33 @@
+<Project>
+  <PropertyGroup>
+    <Copyright>Copyright © 2014-2020 Petabridge</Copyright>
+    <Authors>Aaronontheweb, Petabridge</Authors>
+    <VersionPrefix>0.7.0</VersionPrefix>
+    <PackageReleaseNotes>Upgraded to Akka.NET v1.3.1.
+[PerformanceCountersCategoryName made settable](https://github.com/petabridge/akka-monitoring/pull/35)</PackageReleaseNotes>
+    <PackageIconUrl>http://getakka.net/images/akkalogo.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/petabridge/akka-monitoring</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/petabridge/akka-monitoring/blob/dev/LICENSE</PackageLicenseUrl>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LibraryFramework>netstandard2.0</LibraryFramework>
+    <TestsNetCoreFramework>netcoreapp3.1</TestsNetCoreFramework>
+    <NBenchVersion>1.2.2</NBenchVersion>
+    <XunitVersion>2.4.1</XunitVersion>
+    <TestSdkVersion>16.4.0</TestSdkVersion>
+    <PackageTags>akka actor monitoring metrics statsd</PackageTags>
+  </PropertyGroup>
+  <!-- SourceLink support for all Akka.NET projects -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+  <PropertyGroup>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <!-- Optional: Build symbol package (.snupkg) to distribute the PDB containing Source Link -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+</Project>

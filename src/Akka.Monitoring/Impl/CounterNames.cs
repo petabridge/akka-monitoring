@@ -38,11 +38,7 @@ namespace Akka.Monitoring.Impl
         /// <param name="context">The context of the actor reporting the problem</param>
         /// <param name="metricName">The metric being reported</param>
         /// <returns>A fully qualified metric name</returns>
-        public static string ActorSpecificCategory(IActorContext context, string metricName)
-        {
-            return
-                string.Format("{0}.{1}.{2}", context.System.Name, context.Props.Type.Name, metricName);
-        }
-
+        public static string ActorSpecificCategory(IActorContext context, string metricName) => 
+            $"{context.System.Name}.{context.Props.Type.Name}.{metricName}";
     }
 }

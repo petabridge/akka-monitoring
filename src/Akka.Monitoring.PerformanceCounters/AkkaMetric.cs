@@ -4,24 +4,15 @@ namespace Akka.Monitoring.PerformanceCounters
 {
     internal abstract class AkkaMetric
     {
-        private readonly string _name;
-        private readonly string _categoryName;
-
         protected AkkaMetric(string name, string categoryName)
         {
-            _name = name;
-            _categoryName = categoryName;
+            Name = name;
+            CategoryName = categoryName;
         }
 
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name { get; }
 
-        public string CategoryName
-        {
-            get { return _categoryName; }
-        }
+        public string CategoryName { get; }
 
         abstract public void RegisterIn(CounterCreationDataCollection collection);
     }
