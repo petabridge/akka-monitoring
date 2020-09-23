@@ -26,7 +26,7 @@ steps:
   displayName: 'Use .NET Core sdk'
   inputs:
     packageType: sdk
-    version: 2.1
+    version: 2.1.810
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: BatchScript@1
