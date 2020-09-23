@@ -1,170 +1,29 @@
-<#
-.SYNOPSIS
-This is a Powershell script to bootstrap a Fake build.
-.DESCRIPTION
-This Powershell script will download NuGet if missing, restore NuGet tools (including Fake)
-and execute your Fake build script with the parameters you provide.
-.PARAMETER Target
-The build script target to run.
-.PARAMETER Configuration
-The build configuration to use.
-.PARAMETER Verbosity
-Specifies the amount of information to be displayed.
-.PARAMETER WhatIf
-Performs a dry run of the build script.
-No tasks will be executed.
-.PARAMETER ScriptArgs
-Remaining arguments are added here.
-#>
+# docfx.ps1
+$VisualStudioVersion = "15.0";
+$DotnetSDKVersion = "2.0.0";
 
-[CmdletBinding()]
-Param(
-    [string]$Target = "Default",
-    [ValidateSet("Release", "Debug")]
-    [string]$Configuration = "Release",
-    [ValidateSet("Quiet", "Minimal", "Normal", "Verbose", "Diagnostic")]
-    [string]$Verbosity = "Verbose",
-    [switch]$WhatIf,
-    [Parameter(Position=0,Mandatory=$false,ValueFromRemainingArguments=$true)]
-    [string[]]$ScriptArgs
-)
+# Get dotnet paths
+$MSBuildExtensionsPath = "C:\Program Files\dotnet\sdk\" + $DotnetSDKVersion;
+$MSBuildSDKsPath = $MSBuildExtensionsPath + "\SDKs";
 
-$FakeVersion = "4.61.2"
-$DotNetChannel = "LTS";
-$DotNetVersion = "3.1.105";
-$DotNetInstallerUri = "https://dot.net/v1/dotnet-install.ps1";
-$NugetVersion = "4.1.0";
-$NugetUrl = "https://dist.nuget.org/win-x86-commandline/v$NugetVersion/nuget.exe"
-$ProtobufVersion = "3.4.0"
-$DocfxVersion = "2.40.5"
+# Get Visual Studio install path
+$VSINSTALLDIR =  $(Get-ItemProperty "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\SxS\VS7").$VisualStudioVersion;
 
-# Make sure tools folder exists
-$PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent
-$ToolPath = Join-Path $PSScriptRoot "tools"
-if (!(Test-Path $ToolPath)) {
-    Write-Verbose "Creating tools directory..."
-    New-Item -Path $ToolPath -Type directory | out-null
-}
+# Add Visual Studio environment variables
+$env:VisualStudioVersion = $VisualStudioVersion;
+$env:VSINSTALLDIR = $VSINSTALLDIR;
 
-###########################################################################
-# INSTALL .NET CORE CLI
-###########################################################################
+# Add dotnet environment variables
+$env:MSBuildExtensionsPath = $MSBuildExtensionsPath;
+$env:MSBuildSDKsPath = $MSBuildSDKsPath;
 
-Function Remove-PathVariable([string]$VariableToRemove)
-{
-    $path = [Environment]::GetEnvironmentVariable("PATH", "User")
-    if ($path -ne $null)
-    {
-        $newItems = $path.Split(';', [StringSplitOptions]::RemoveEmptyEntries) | Where-Object { "$($_)" -inotlike $VariableToRemove }
-        [Environment]::SetEnvironmentVariable("PATH", [System.String]::Join(';', $newItems), "User")
-    }
-
-    $path = [Environment]::GetEnvironmentVariable("PATH", "Process")
-    if ($path -ne $null)
-    {
-        $newItems = $path.Split(';', [StringSplitOptions]::RemoveEmptyEntries) | Where-Object { "$($_)" -inotlike $VariableToRemove }
-        [Environment]::SetEnvironmentVariable("PATH", [System.String]::Join(';', $newItems), "Process")
-    }
-}
-
-# Get .NET Core CLI path if installed.
-$FoundDotNetCliVersion = $null;
-if (Get-Command dotnet -ErrorAction SilentlyContinue) {
-    $FoundDotNetCliVersion = dotnet --version;
-    $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
-    $env:DOTNET_CLI_TELEMETRY_OPTOUT=1
-}
-
-if($FoundDotNetCliVersion -ne $DotNetVersion) {
-    $InstallPath = Join-Path $PSScriptRoot ".dotnet"
-    if (!(Test-Path $InstallPath)) {
-        mkdir -Force $InstallPath | Out-Null;
-    }
-    (New-Object System.Net.WebClient).DownloadFile($DotNetInstallerUri, "$InstallPath\dotnet-install.ps1");
-    & $InstallPath\dotnet-install.ps1 -Channel $DotNetChannel -Version $DotNetVersion -InstallDir $InstallPath -Architecture x64;
-
-    Remove-PathVariable "$InstallPath"
-    $env:PATH = "$InstallPath;$env:PATH"
-    $env:DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
-    $env:DOTNET_CLI_TELEMETRY_OPTOUT=1
-    $env:DOTNET_ROOT=$InstallPath
-}
-
-###########################################################################
-# INSTALL NUGET
-###########################################################################
-
-# Make sure nuget.exe exists.
-$NugetPath = Join-Path $ToolPath "nuget.exe"
-if (!(Test-Path $NugetPath)) {
-    Write-Host "Downloading NuGet.exe..."
-    (New-Object System.Net.WebClient).DownloadFile($NugetUrl, $NugetPath);
-}
-
-###########################################################################
-# INSTALL FAKE
-###########################################################################
-# Make sure Fake has been installed.
-
-$FakeExePath = Join-Path $ToolPath "FAKE/tools/FAKE.exe"
-if (!(Test-Path $FakeExePath)) {
-    Write-Host "Installing Fake..."
-    Invoke-Expression "&`"$NugetPath`" install Fake -ExcludeVersion -Version $FakeVersion -OutputDirectory `"$ToolPath`"" | Out-Null;
-    if ($LASTEXITCODE -ne 0) {
-        Throw "An error occured while restoring Fake from NuGet."
-    }
-}
-
-###########################################################################
-# Docfx
-###########################################################################
-
-# Make sure Docfx has been installed.
-$DocfxExePath = Join-Path $ToolPath "docfx.console/tools/docfx.exe"
-if (!(Test-Path $DocfxExePath)) {
-    Write-Host "Installing Docfx..."
-    Invoke-Expression "&`"$NugetPath`" install docfx.console -ExcludeVersion -Version $DocfxVersion -OutputDirectory `"$ToolPath`"" | Out-Null;
-    if ($LASTEXITCODE -ne 0) {
-        Throw "An error occured while restoring docfx.console from NuGet."
-    }
-}
-
-###########################################################################
-# SignTool
-###########################################################################
-
-# Make sure the SignClient has been installed
-if (Get-Command signclient -ErrorAction SilentlyContinue) {
-    Write-Host "Found SignClient. Skipping install."
-}
-else{
-    $SignClientFolder = Join-Path $ToolPath "signclient"
-    Write-Host "SignClient not found. Installing to ... $SignClientFolder"
-    dotnet tool install SignClient --version 1.0.82 --tool-path "$SignClientFolder"
-}
-
-###########################################################################
-# RUN BUILD SCRIPT
-###########################################################################
-
-# Build the argument list.
-$Arguments = @{
-    target=$Target;
-    configuration=$Configuration;
-    verbosity=$Verbosity;
-    dryrun=$WhatIf;
-}.GetEnumerator() | %{"--{0}=`"{1}`"" -f $_.key, $_.value };
-
-# Start Fake
-Write-Host "Running build script..."
-Invoke-Expression "$FakeExePath `"build.fsx`" $ScriptArgs $Arguments"
-
-exit $LASTEXITCODE
+# Build our docs
+& .\tools\docfx.console\tools\docfx @args
 # SIG # Begin signature block
 # MIIgTwYJKoZIhvcNAQcCoIIgQDCCIDwCAQExDzANBglghkgBZQMEAgEFADB5Bgor
 # BgEEAYI3AgEEoGswaTA0BgorBgEEAYI3AgEeMCYCAwEAAAQQH8w7YFlLCE63JNLG
-# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCDy+m5x/ontiIGy
-# a2+Kn4J7jbsGsFWkLaQLK39iFQNsb6CCDiIwggO3MIICn6ADAgECAhAM5+DlF9hG
+# KX7zUQIBAAIBAAIBAAIBAAIBADAxMA0GCWCGSAFlAwQCAQUABCBQz9AeYchajBt0
+# lCkp11dqFDcCeNbcN4hC+uxnLB5e36CCDiIwggO3MIICn6ADAgECAhAM5+DlF9hG
 # /o/lYPwb8DA5MA0GCSqGSIb3DQEBBQUAMGUxCzAJBgNVBAYTAlVTMRUwEwYDVQQK
 # EwxEaWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xJDAiBgNV
 # BAMTG0RpZ2lDZXJ0IEFzc3VyZWQgSUQgUm9vdCBDQTAeFw0wNjExMTAwMDAwMDBa
@@ -244,21 +103,21 @@ exit $LASTEXITCODE
 # MRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMTEwLwYDVQQDEyhEaWdpQ2VydCBT
 # SEEyIEFzc3VyZWQgSUQgQ29kZSBTaWduaW5nIENBAhAMY4mp7C/JJFuk+yoh+Ufk
 # MA0GCWCGSAFlAwQCAQUAoIIBATAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAc
-# BgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQgJuHi
-# vbFHMNp3nUjNSOgj/F89M0Ct8VgVgwOelqhnzlAwgZQGCisGAQQBgjcCAQwxgYUw
+# BgorBgEEAYI3AgELMQ4wDAYKKwYBBAGCNwIBFTAvBgkqhkiG9w0BCQQxIgQgeeGI
+# td7hvXMbRXCdfc6cSLU6+f7kS+XMO4O7V5mKLm4wgZQGCisGAQQBgjcCAQwxgYUw
 # gYKgSIBGAFAAZQB0AGEAYgByAGkAZABnAGUAIABTAHQAYQBuAGQAYQByAGQAIABC
 # AHUAaQBsAGQAIABUAGUAbQBwAGwAYQB0AGUAc6E2gDRodHRwczovL2dpdGh1Yi5j
 # b20vcGV0YWJyaWRnZS9wZXRhYnJpZGdlLWRvdG5ldC1uZXcgMA0GCSqGSIb3DQEB
-# AQUABIIBAIJgaaYF7d0eCozYo6KiZYYKU3Qptr33/FYVlEKc6kgh+9D/ZAQ1lqsF
-# k9mZVCB4IbJs92KSNuHhkZpeZjV30YiWJ6Ixd+tF5sAcKfNTSjH3QfqJAdXUG8gL
-# mUbk0H64wz/lTsWLz5l6SrSSnHvABVjn/PqLMRqbrwRvhFFt9yoRlmDzG7/UAPWB
-# +ftkGkPOUUUEIbF/RCdPiXIb82W4cXuBk8Kqkou6X4Dbv07GzKkeCun5DbgD4mL3
-# 2h91fyUsUkh5USpZVcScsLSsIqFavZ3GPExWhkGvo8EQ756+ZT+EdyleQd70eI6V
-# +jrFfrNWxRlmVcfE+ZBH8bLJinzYGNChgg7IMIIOxAYKKwYBBAGCNwMDATGCDrQw
+# AQUABIIBAExTzv8pJ7NtKKdH985dyncPw0hXT7uJILPBp0bTNZKb4K2RgoQs+scT
+# V3EIRqeesNU8XgOiQ706O4dZ9KZdKIYotMZCMxaUDx8Pcyh5eSbIeRsd/1hSrRye
+# xWunQIFTXz7N/ZjQcYAGYlKgsgtcewVAnuOaszDCXPKKCKB9pV15/XtD4rLQOP1l
+# RL7JlcvjiovFmJulAPgnCrm/vcW/kbNwtJitwv2Sd4loOytsrTqjAhafweP0g8r5
+# LZXtwhjHJS6fdDg21t1eCBvMlOXWWRbr3n7S76jGlr4X9yga/tYzGjL9YwDNfxlz
+# 9WZZcvVQG/JneyRqginhFgd7lGGaJmGhgg7IMIIOxAYKKwYBBAGCNwMDATGCDrQw
 # gg6wBgkqhkiG9w0BBwKggg6hMIIOnQIBAzEPMA0GCWCGSAFlAwQCAQUAMHcGCyqG
 # SIb3DQEJEAEEoGgEZjBkAgEBBglghkgBhv1sBwEwMTANBglghkgBZQMEAgEFAAQg
-# yVw1M/glzmvyYENKoVDAlG2PPFDPhYSmm6N4s9jIPD0CEGcCUCnVFW/SW5WYFvGQ
-# UdEYDzIwMTkwMzE1MTYwMDU3WqCCC7swggaCMIIFaqADAgECAhAJwPxGyARCE7VZ
+# MW1Bo636fknWr+jUnVUavI1uxtL6ea0E1CNLS0usvYgCEC6Oop8SLuAYKYEhQmGM
+# INwYDzIwMTkwMzE1MTYwMDU3WqCCC7swggaCMIIFaqADAgECAhAJwPxGyARCE7VZ
 # i68oT05BMA0GCSqGSIb3DQEBCwUAMHIxCzAJBgNVBAYTAlVTMRUwEwYDVQQKEwxE
 # aWdpQ2VydCBJbmMxGTAXBgNVBAsTEHd3dy5kaWdpY2VydC5jb20xMTAvBgNVBAMT
 # KERpZ2lDZXJ0IFNIQTIgQXNzdXJlZCBJRCBUaW1lc3RhbXBpbmcgQ0EwHhcNMTcw
@@ -327,11 +186,11 @@ exit $LASTEXITCODE
 # i68oT05BMA0GCWCGSAFlAwQCAQUAoIGYMBoGCSqGSIb3DQEJAzENBgsqhkiG9w0B
 # CRABBDAcBgkqhkiG9w0BCQUxDxcNMTkwMzE1MTYwMDU3WjArBgsqhkiG9w0BCRAC
 # DDEcMBowGDAWBBRAAZFHXJiJHeuhBK9HCRtettTLyzAvBgkqhkiG9w0BCQQxIgQg
-# jLu5eXUI0j43Sq/ZJ76+UJmWF/2Amb+YAcVtGZhRJKowDQYJKoZIhvcNAQEBBQAE
-# ggEAQBQNwdmatbURcWuntIUvk18FZGGLRA3bT0kNXN0pwwwopQlr4G6WbL8C8oSw
-# 0KUbWa3VonUYHemc6ZYgSOaa07X9dMoEWdgf9Jy7LDFZQCYBkI7034x0ujyTAZ6U
-# KtqQupuRPdLAsCb67KB6DR6lIuP1hj1yolPb9uyqEsH1JJqusTiirZvO1UvNVtHU
-# ljscye8j2SiO8UNLhYHL1me43S4NmqgLkaDvIE8lVx8GtyFyGRdFZYTzAufXTR9H
-# HK8lsD0ekQiOpaAIw/MfhEgTej1Z3L686Z0xwBVyH988UA9lVbXdDZWS3odGd2CT
-# /JdEUFIMzW5J8N+QntZ/Fjua/A==
+# MAnlyKI/RvOfpyBd1cxCy8QRwtpmnSVgIQ/gApEt948wDQYJKoZIhvcNAQEBBQAE
+# ggEAGMxkafKWWWlyCNum68cHE0oqfsfzJkraAS8SRvgjSLlnaad6z/qJCaC9vG1m
+# kksCo767qmWTK5/9BNRg5P5rFKQLw+juhCK3TcNROHAZ5SkZetRpyHf/hflhv6u1
+# +vivEtitTyPmBQr661Rjvity4mf9TivN2NW7kP0FZAllVgUS1pGl+HRwkmvQspAB
+# k8mggSsKiegd35NRrdd+901YW7hjLQ4O0jjthGPmLpvbeIZZgoim8nSBiZ1YPI5L
+# SS+o7uqYQ9h/byhUwPNsFIjyh4Apj9nooEvvRnCVzU3s2qQ1IviH8DtA+pW2rMwz
+# QS7L0VtE7kOPVHo8AS4nIHe1EA==
 # SIG # End signature block
