@@ -1,7 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
+<Import Project="..\common.props" />
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>StatsD monitoring support for Akka.NET actors.</Description>
+    <TargetFramework>$(LibraryFramework)</TargetFramework>
+    <PackageTags>$(AkkaPackageTags); statsd graphite</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

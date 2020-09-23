@@ -1,7 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\common.props" />
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Application Insights monitoring support for Akka.NET actors.</Description>
+    <TargetFramework>$(LibraryFramework)</TargetFramework>
+    <PackageTags>$(AkkaPackageTags); application insights app-insights</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,5 +15,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Akka.Monitoring\Akka.Monitoring.csproj" />
   </ItemGroup>
-
 </Project>

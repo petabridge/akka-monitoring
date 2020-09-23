@@ -1,8 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\common.props" />
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Windows Performance Counter monitoring support for Akka.NET actors.</Description>
+    <TargetFramework>$(LibraryFramework)</TargetFramework>
+    <PackageTags>$(AkkaPackageTags); performance counters</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+
 
   <ItemGroup>
     <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="4.5.0" />
