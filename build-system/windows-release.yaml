@@ -26,14 +26,19 @@ steps:
   displayName: 'Use .NET Core sdk'
   inputs:
     packageType: sdk
-    version: 2.1.22 #needed for SignTool
-    installationPath: $(Agent.ToolsDirectory)/dotnet
+    version: 2.1.810
+
+- task: UseDotNet@2
+  displayName: 'Use .NET Core SDK 3.1.105'
+  inputs:
+    packageType: sdk
+    version: 3.1.105
 
 - task: BatchScript@1
   displayName: 'FAKE Build'
   inputs:
     filename: build.cmd
-    arguments: 'nuget SignClientUser=$(signingUsername) SignClientSecret=$(signingPassword) nugetpublishurl=https://www.nuget.org/api/v2/package nugetkey=$(Akka.NET Tools NuGet)'
+    arguments: 'Nuget SignClientUser=$(signingUsername) SignClientSecret=$(signingPassword) nugetpublishurl=https://www.nuget.org/api/v2/package nugetkey=$(Akka.NET Tools NuGet)'
 
 - task: GitHubRelease@0
   displayName: 'GitHub release (create)'
