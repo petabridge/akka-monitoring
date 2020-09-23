@@ -1,78 +1,20 @@
-#### 0.7.0 September 13 2017
-* Upgraded to Akka.NET v1.3.1.
-* [PerformanceCountersCategoryName made settable](https://github.com/petabridge/akka-monitoring/pull/35) 
+#### 1.0.0 September 23 2020
+* Upgraded to Akka.NET v1.3.18
+* Migrated all packages to .NET Standard 2.0
+* Switched StatsD component to use [JustEat.StatsD](https://www.nuget.org/packages/JustEat.StatsD/)
 
+**Phobos vs. Akka.Monitoring**
+In 2018 [Petabridge](https://petabridge.com/), the makers of Akka.Monitoring, [published a propreitary product for Akka.NET monitoring and tracing called Phobos](https://phobos.petabridge.com/).
 
-#### 0.6.1 May 09 2016
+Phobos is much more fully-featured than Akka.Monitoring, as it:
 
-Updated to Akka 1.0.8
+1. Doesn't require users to decorate their actors with any code - monitoring and tracing happens automatically;
+2. Supports a much larger number of metric systems and types out of the box;
+3. Includes traceability with actors, including over the network with Akka.Remote, and other parts of your system such as ASP.NET Core; and
+4. Comes with 1 business day SLA support for Phobos and installing it into your Akka.NET applications.
 
-#### 0.5.3 Apr 06 2015
-Change UpdateCounter for application insights sink to use TrackMetric instead of TrackEvent
+That said, [a Phobos license costs your company $4,000 per year](https://phobos.petabridge.com/articles/setup/request.html).
 
-#### 0.5.2 Apr 06 2015
-Added constructor for AppInsigts monitor to inject new TelemetryClient
+It's the belief of Petabridge that there should be a low-cost alternative to that in order to make Akka.NET accessible to students, startups, DIY developers, and anyone who doesn't want to pay for that license. That's what Akka.Monitoring is - a simple, straightforward alternative that is free and open source. We will continue to support Akka.Monitoring and respond to end-user requests, but you should expect the majority of our development efforts to go into Phobos.
 
-#### 0.5.1 Aug 19 2015
-Bugfix release for 0.5.0
-
-Fixes:
-
-* Resolves [Unauthorized access error when attempting to run Performance Counters within IIS (ASP.Net) application](https://github.com/petabridge/akka-monitoring/issues/16)
-
-#### 0.5.0 Aug 13 2015
-* Added support for Windows Performance Counters!
-
-To install that package, just type
-    PM> Install-Package Akka.Monitoring.PerformanceCounters
-
-#### 0.4.0 Apr 10 2015
-* Added support for Azure Application Insights
-
-To install that package, just type
-
-    PM> Install-package Akka.Monitoring.ApplicationInsights
-
-#### 0.3.3 Apr 10 2015
-* Akka.Monitoring for Akka.NET v1.0!
-
-#### 0.3.2 Aug 22 2014
-* Upgraded to latest version of Akka.NET due to breaking changes made to extensions interface...
-
-#### 0.3.1 Jul 15 2014
-* Upgraded NStatsD.HighPerformance dependency (again)
-
-#### 0.3.0 Jul 15 2014
-* Upgraded NStatsD.HighPerformance dependency
-* Removed Helios dependency
-* Added ability to set sample rates on all calls
-* Added `SetGlobalSampleRate` method to enable setting a sample rate globally across all calls
-
-#### 0.2.5 Jul 09 2014
-* Upgraded Helios and Akka dependency
-
-#### 0.2.4 Jul 08 2014
-* Upgraded Helios and removed dependency on JSON.NET
-
-
-#### 0.2.3 Jul 08 2014
-* Totally replaced our StatsD NuGet package
-
-#### 0.2.2 Jul 08 2014
-* Fixed the namespacing for StatsD monitoring so system-wide metrics aren't accidentally hidden
-
-#### 0.2.1 Jul 08 2014
-* Fixed the name of the `IncrementMessagesReceived` counter so it now correctly reads as `messages.received`
-
-
-#### 0.2.0 Jul 08 2014
-* Made it so custom metrics now prepend their names with the appropriate actor system / actor name
-* Fixed some bugs with reporting custom gauges
-* Updated FAKE build file
-
-#### 0.1.1 Jul 07 2014
-* Fixed a bug with FAKE build system.
-* Fixed some bugs with logger initialization.
-
-#### 0.1.0 Jul 07 2014
-* Initial release - contains pluggable support for future monitoring systems and Esty's StatsD right out of the box.
+Please open an issue or [contact Petabridge](https://petabridge.com/contact/) if you have any questions.
