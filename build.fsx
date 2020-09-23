@@ -13,9 +13,9 @@ open Fake.DocFxHelper
 let configuration = "Release"
 
 // Metadata used when signing packages and DLLs
-let signingName = "My Library"
-let signingDescription = "My REALLY COOL Library"
-let signingUrl = "https://signing.is.cool/"
+let signingName = "Akka.Monitoring"
+let signingDescription = "Akka.Monitoring Library"
+let signingUrl = "https://github.com/petabridge/akka-monitoring"
 
 // Read release notes and version
 let solutionFile = FindFirstMatchingFile "*.sln" __SOURCE_DIRECTORY__  // dynamically look up the solution
