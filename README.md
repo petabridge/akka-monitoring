@@ -3,7 +3,7 @@ Akka.Monitoring
 Pluggable monitoring system instrumentation for [Akka.NET](https://github.com/akkadotnet/akka.net "Port of Akka actors for .NET") actor systems.
 
 ## Phobos vs. Akka.Monitoring
-![Phobos Akka.NET Monitoring, Tracing, and Observability Logo](/images/phobos_logo.png)
+![Phobos Akka.NET Monitoring, Tracing, and Observability Logo](/docs/images/phobos_logo.png)
 
 In 2018 [Petabridge](https://petabridge.com/), the makers of Akka.Monitoring, [published a propreitary product for Akka.NET monitoring and tracing called Phobos](https://phobos.petabridge.com/).
 
