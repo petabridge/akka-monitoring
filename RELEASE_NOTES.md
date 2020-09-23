@@ -1,4 +1,4 @@
-#### 1.0.0 September 23 2020
+#### 1.0.1 September 23 2020
 * Upgraded to Akka.NET v1.3.18
 * Migrated all packages to .NET Standard 2.0
 * Switched StatsD component to use [JustEat.StatsD](https://www.nuget.org/packages/JustEat.StatsD/)
