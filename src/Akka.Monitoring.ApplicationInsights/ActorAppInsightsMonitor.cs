@@ -58,10 +58,7 @@ namespace Akka.Monitoring.ApplicationInsights
         private static readonly Guid MonitorName = 
             new Guid("b5b96e2c-6d65-46f5-a9e4-8c1974a1e858");
 
-        public override int MonitoringClientId
-        {
-            get { return MonitorName.GetHashCode(); }
-        }
+        public override int MonitoringClientId => MonitorName.GetHashCode();
 
         public override void DisposeInternal()
         {

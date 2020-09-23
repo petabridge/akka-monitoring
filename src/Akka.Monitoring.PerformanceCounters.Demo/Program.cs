@@ -34,8 +34,28 @@ namespace Akka.Monitoring.PerformanceCounters.Demo
         }
     }
 
-    class HelloActor : TypedActor, IHandle<string>
+    class HelloActor : ActorBase
     {
+        protected override bool Receive(object msg)
+        {
+            if (msg is string message)
+            {
+                Context.IncrementMessagesReceived();
+                Console.WriteLine("Received: {0}", message);
+                if (message == "Goodbye")
+                {
+                    Context.Self.Tell(PoisonPill.Instance);
+                    Program.ManualResetEvent.Set(); //allow the program to exit
+                }
+                else
+                    Sender.Tell("Hello!");
+
+                return true;
+            }
+
+            return false;
+        }
+
         protected override void PreStart()
         {
             Context.IncrementActorCreated();
@@ -47,23 +67,16 @@ namespace Akka.Monitoring.PerformanceCounters.Demo
             Context.IncrementActorStopped();
             base.PostStop();
         }
-
-        public void Handle(string message)
-        {
-            Context.IncrementMessagesReceived();
-            Console.WriteLine("Received: {0}", message);
-            if (message == "Goodbye")
-            {
-                Context.Self.Tell(PoisonPill.Instance);
-                Program.ManualResetEvent.Set(); //allow the program to exit
-            }
-            else
-                Sender.Tell("Hello!");
-        }
     }
 
-    class GoodbyeActor : TypedActor, IHandle<Tuple<IActorRef, string>>, IHandle<string>
+    class GoodbyeActor : ReceiveActor
     {
+        public GoodbyeActor()
+        {
+            Receive<string>(Handle);
+            Receive<Tuple<IActorRef, string>>(Handle);
+        }
+
         protected override void PreStart()
         {
             Context.IncrementActorCreated();
