@@ -3,7 +3,7 @@
 * Migrated all packages to .NET Standard 2.0
 * Switched StatsD component to use [JustEat.StatsD](https://www.nuget.org/packages/JustEat.StatsD/)
 
-### Phobos vs. Akka.Monitoring
+**Phobos vs. Akka.Monitoring**
 In 2018 [Petabridge](https://petabridge.com/), the makers of Akka.Monitoring, [published a propreitary product for Akka.NET monitoring and tracing called Phobos](https://phobos.petabridge.com/).
 
 Phobos is much more fully-featured than Akka.Monitoring, as it:
